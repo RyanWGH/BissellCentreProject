@@ -1,0 +1,22 @@
+{
+  "name": "bissellcentreproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyanWGH/BissellCentreProject.git"
+  },
+  "author": "Ryan Hancock and Olivier Houle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RyanWGH/BissellCentreProject/issues"
+  },
+  "homepage": "https://github.com/RyanWGH/BissellCentreProject#readme",
+  "dependencies": {
+    "electron": "^3.0.2"
+  }
+}
