@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/RyanWGH/BissellCentreProject#readme",
   "dependencies": {
-    "electron": "^3.0.2"
+    "body-parser": "^1.18.3",
+    "electron": "^3.0.2",
+    "express": "^4.16.3",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
   }
 }
