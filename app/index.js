@@ -10,5 +10,10 @@ let mainWindow;
 app.on("ready", function(){
     //create new window
     mainWindow = new BrowserWindow({});
-    //
+    //Load html file in new window
+    mainWindow.loadURL(url.format({
+        pathname: path.join(__dirname, "mainWindow.html"),
+        protocol: "file:",
+        slahes: true
+    }));  
 });
