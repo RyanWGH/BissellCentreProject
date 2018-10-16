@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Login - Bissell Centre Reception</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+.form-group label, .form-group input {
+  display: inline-block;
+  width:75px;
+  vertical-align: middle;
+  text-align: left;
+  float:none;
+}
+</style>
+</head>
+<body>
+
+<div class="container" align="center">
+  <p style="margin-top: 50px;"></p>
+		<img class="mb-4" src="../../../images/logos/WebLogo.png" alt="" align="middle">
+    <p style="margin-top: 25px;"></p>
+  <h2>Please Sign In</h2>
+  <p style="margin-top: 25px;"></p>
+  <form id="loginform" action="/logincheck" method="post">
+    <div class="form-group">
+      <label for="usr">Name:</label>
+      <input type="text" class="form-control" name="usr" style="width: 150px;">
+    </div>
+    <div class="form-group">
+      <label for="pwd">Password:</label>
+      <input type="password" class="form-control" name="pwd" style="width: 150px;">
+    </div>
+  </form>
+  <button type="submit" form="loginform" class="btn btn-primary">Submit</button>
+</div>
+
+</body>
+</html>

@@ -24,7 +24,7 @@
 	</u1>
   </div>
 </nav>
-<link rel="stylesheet" href="/css/tablestyle.css">
+<link rel="stylesheet" href="../../css/tablestyle.css">
 
 <div id="page">
 <div align="center"><font size=14><b>Outstanding Mail</b></font></div>
@@ -45,11 +45,11 @@
 </div>
 
 <script>
-	
-	function returnMail(id) {
+
+	/*function returnMail(id) {
 		$.post("/")
 	}
-	
+
 	$( document ).ready(function(){
 		$.get("/getOutstandingMailList", (data) => {
 			let outstandingMail = JSON.parse(data);
@@ -62,18 +62,18 @@
 					<td class="Email">${i.}</td>
 					<td class="Sender">${i.}</td>
 					<td class="Data">${i.}</td>
-					
+
 					<td><button class="btn btn-primary return">Return</button></td>
 					</tr>
 					`);
 			}
-			
+
 			$('.return').click(function() {
 				returnOutstandingMail($(this).parent().parent().find('.mid').text())
 			});
 		});
-	});
-	
+	});*/
+
 	</script>
 
 </body>
