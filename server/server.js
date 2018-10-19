@@ -84,7 +84,7 @@ app.post("/participant", (req, res) => {
                     return;
                 }
                 let lastID = result[0].PID;
-                
+
                 sql.query(connectionString,
                     `INSERT INTO Participant VALUES(${lastID+1}, '${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', 0)`,
                     (err) => {
@@ -99,6 +99,20 @@ app.post("/participant", (req, res) => {
     } else {
         res.json({ error: "Please fill the required fields."});
     }
+});
+
+app.get("/participant", (req, res) => {
+    console.log("getting participants");
+    sql.query(connectionString,
+        "SELECT * FROM Participant",
+        (err, results) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while getting participants" });
+                return;
+            }
+            res.json(results);
+        });
 });
 
 function checkParticipant(p) {
