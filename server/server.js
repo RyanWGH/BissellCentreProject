@@ -66,41 +66,14 @@ passport.use(new LocalStrategy((username, password, done) => {
         });
 }));
 
+// Login
 app.post("/login", passport.authenticate("local"), (req, res) => {
     console.log("authed");
     res.json({id: req.user.UID});
 });
+// End Login
 
-app.post("/participant", (req, res) => {
-    console.log("putting a new participant");
-    console.log(req.body);
-    if (checkParticipant(req.body)) {
-        sql.query(connectionString,
-            "SELECT TOP 1 PID FROM Participant ORDER BY PID DESC",
-            (err, result) => {
-                if (err) {
-                    console.log(1, err);
-                    res.json({ error: "Error while inserting participant"});
-                    return;
-                }
-                let lastID = result[0].PID;
-
-                sql.query(connectionString,
-                    `INSERT INTO Participant VALUES(${lastID+1}, '${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', 0)`,
-                    (err) => {
-                        if (err) {
-                            console.log(2, err);
-                            res.json({ error: "Error while inserting participant"});
-                            return;
-                        }
-                        res.json({ success: true });
-                    });
-            });
-    } else {
-        res.json({ error: "Please fill the required fields."});
-    }
-});
-
+// Participant
 app.get("/participant", (req, res) => {
     console.log("getting participants");
     sql.query(connectionString,
@@ -115,8 +88,108 @@ app.get("/participant", (req, res) => {
         });
 });
 
-function checkParticipant(p) {
+app.put("/participant", (req, res) => {
+    console.log("putting a new participant");
+    console.log(req.body);
+    if (checkNewParticipant(req.body)) {
+        sql.query(connectionString,
+            `INSERT INTO Participant VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', 0)`,
+            (err) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while inserting participant"});
+                    return;
+                }
+                res.json({ success: true });
+            });
+    } else {
+        res.json({ error: "Please fill the required fields."});
+    }
+});
+
+app.post("/participant", (req, res) => {
+    console.log("get participant info");
+    console.log(req.body);
+    if (checkParticipant(req.body)) {
+        sql.query(connectionString,
+            `SELECT * FROM Participant WHERE PID = ${req.body.PID}`,
+            (err, results) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while getting participant info" });
+                    return;
+                }
+                res.json(results);
+            });
+    } else {
+        res.json({ error: "Invalid request body" });
+    }
+});
+// End Participants
+
+// Oustanding Mail
+app.get("/outstanding_mail", (req, res) => {
+    console.log("getting outstanding mail");
+    sql.query(connectionString,
+        "SELECT * FROM Mail WHERE DATEDIFF(day, GETDATE(), Date) >= 60 AND Status = 0",
+        (err, results) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while getting outstanding mail" });
+                return;
+            }
+            res.json(results);
+        });
+});
+// End Outstanding Mail
+
+// Mail
+app.get("/mail", (req, res) => {
+    console.log("getting all mail");
+    sql.query(connectionString,
+        "SELECT * FROM Mail",
+        (err, results) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while getting mail" });
+                return;
+            }
+            res.json(results);
+        });
+});
+
+app.post("/mail", (req, res) => {
+    console.log("adding new mail");
+    console.log(req.body);
+    if (checkMail(req.body)) {
+        sql.query(connectionString,
+            `INSERT INTO Mail VALUES(${req.body.PID}, '${req.body.SenderName}', GETDATE(), 0, null, null)`,
+            (err) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while inserting mail" });
+                    return;
+                }
+                res.json({ success: true });
+            });
+    } else {
+        res.json({ error: "Please fill the required fields." });
+    }
+});
+// End Mail
+
+function checkNewParticipant(p) {
+    // later add picture check
     return p.FName && p.LName;
+}
+
+function checkMail(m) {
+    // later add signature check
+    return m.PID && m.SenderName;
+}
+
+function checkParticipant(p) {
+    return p.PID;
 }
 
 app.listen(port, () => {

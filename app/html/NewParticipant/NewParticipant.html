@@ -52,10 +52,11 @@ $(document).ready(function() {
     console.log("ready");
     $("#put-participant").submit(function(event) {
         console.log("submit");
-        $.post(
-            "http://localhost:3000/participant",
-            $("#put-participant").serialize()
-        )
+        $.ajax({
+            url:"http://localhost:3000/participant",
+            data: $("#put-participant").serialize(),
+            type: "PUT"
+        })
         .done(function(data) {
             console.log(data);
         });
