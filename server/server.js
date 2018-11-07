@@ -125,7 +125,38 @@ app.post("/participant", (req, res) => {
         res.json({ error: "Invalid request body" });
     }
 });
+
+app.delete("/participant", (req, res) => {
+    console.log("delete a participant");
+    sql.query(connectionString,
+        `DELETE FROM Participant WHERE PID = ${req.body.PID}`,
+        (err, result) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while deleting participant" });
+                return;
+            }
+            console.log("delete participant result: ", result);
+            res.json({ success: true });
+        });
+});
 // End Participants
+
+// Senders
+app.post("/senders", (req, res) => {
+    console.log("getting list of senders for participant");
+    sql.query(connectionString,
+        `SELECT SenderName FROM Mail WHERE PID = ${req.body.PID}`,
+        (err, results) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while fetching sender info" });
+                return;
+            }
+            res.json(results);
+        });
+});
+// End Senders
 
 // Oustanding Mail
 app.get("/outstanding_mail", (req, res) => {
@@ -141,7 +172,39 @@ app.get("/outstanding_mail", (req, res) => {
             res.json(results);
         });
 });
+
+app.post("/outstanding_mail", (req, res) => {
+    console.log("changing outstanding mail status");
+    sql.query(connectionString,
+        `UPDATE Mail SET Status = ${req.body.status} WHERE MID = ${req.body.MID}`,
+        (err, result) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while changing outstanding mail status" });
+                return;
+            }
+            console.log("outstanding mail result: ", result);
+            res.json({ success: true });
+        });
+});
 // End Outstanding Mail
+
+// Pick up
+app.post("/pickup", (req, res) => {
+    console.log("setting mail status to picked up");
+    sql.query(connectionString,
+        `UPDATE Mail SET Status = 1, PickUpDate = GETDATE() WHERE MID = ${req.body.MID}`,
+        (err, result) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while setting pickup status for mail" });
+                return;
+            }
+            console.log("pick up mail result: ", result);
+            res.json({ success: true });
+        });
+});
+// End Pick up
 
 // Mail
 app.get("/mail", (req, res) => {
@@ -159,6 +222,20 @@ app.get("/mail", (req, res) => {
 });
 
 app.post("/mail", (req, res) => {
+    console.log("getting mail for certain participant");
+    sql.query(connectionString,
+        `SELECT * FROM Mail WHERE PID = ${res.body.PID}`,
+        (err, results) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while getting participant mail" });
+                return;
+            }
+            res.json(results);
+        });
+});
+
+app.put("/mail", (req, res) => {
     console.log("adding new mail");
     console.log(req.body);
     if (checkMail(req.body)) {
@@ -176,7 +253,43 @@ app.post("/mail", (req, res) => {
         res.json({ error: "Please fill the required fields." });
     }
 });
+
+app.delete("/mail", (req, res) => {
+    console.log("delete a mail");
+    sql.query(connectionString,
+        `DELETE FROM Mail WHERE MID = ${req.body.MID}`,
+        (err, result) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while deleting mail" });
+                return;
+            }
+            console.log("delete mail result: ", result);
+            res.json({ success: true });
+        });
+});
 // End Mail
+
+// Account
+app.post("/change_password", (req, res) => {
+    console.log("change password");
+    if (checkPassword(req.body)) {
+        sql.query(connectionString,
+            `UPDATE Users SET Password = '${req.body.new1}' WHERE UID = ${req.body.UID} AND Password = '${req.body.old}'`,
+            (err, result) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while changing password" });
+                    return;
+                }
+                console.log("change password result: ", result);
+                res.json({ success: true });
+            });
+    } else {
+        res.json({ error: "Please fill the required fields correctly." });
+    }
+});
+// End Account
 
 function checkNewParticipant(p) {
     // later add picture check
@@ -190,6 +303,10 @@ function checkMail(m) {
 
 function checkParticipant(p) {
     return p.PID;
+}
+
+function checkPassword(p) {
+    return p.old && p.new1 == p.new2 && p.new.length >= 8;
 }
 
 app.listen(port, () => {
