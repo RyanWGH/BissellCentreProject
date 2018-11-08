@@ -9,7 +9,7 @@ const sql = require("msnodesqlv8");
 const app = express();
 const port = 3000;
 
-const connectionString = "Driver={SQL Server Native Client 11.0};Server=localhost;Database=BissellCentre;Trusted_Connection=yes";
+const connectionString = "Driver={SQL Server Native Client 11.0};Server=localhost;Database=BisselCentre;Trusted_Connection=yes";
 
 app.use(express.static("public"));
 app.use(session({
