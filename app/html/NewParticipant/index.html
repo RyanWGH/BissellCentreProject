@@ -53,7 +53,6 @@
 
 <script>
 $(document).ready(function() {
-    console.log("ready");
     $("#put-participant").submit(function(event) {
         console.log("submit");
         $.ajax({
@@ -62,12 +61,10 @@ $(document).ready(function() {
             type: "PUT"
         })
         .done(function(data) {
-            console.log(data);
             alert("Successfully added a new participant!");
             $("#put-participant").trigger("reset");
         })
         .fail(function(data) {
-            console.log(data);
             alert("Failed to add participant");
         });
         event.preventDefault();

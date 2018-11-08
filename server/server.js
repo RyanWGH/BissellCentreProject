@@ -71,10 +71,37 @@ passport.use(new LocalStrategy((username, password, done) => {
         });
 }));
 
-// Login
+// Account
 app.post("/login", passport.authenticate("local"), (req, res) => {
     console.log("authed");
     res.json({UID: req.user.UID});
+});
+
+app.get("/logout", (req, res) => {
+    console.log("logout");
+    if (req.user) {
+        req.logout();
+    }
+    res.json({ success: true });
+});
+
+app.post("/change_password", loggedIn, (req, res) => {
+    console.log("change password");
+    if (checkPassword(req.body)) {
+        sql.query(connectionString,
+            `UPDATE Users SET Password = '${req.body.new1}' WHERE UID = ${req.body.UID} AND Password = '${req.body.old}'`,
+            (err, result) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while changing password" });
+                    return;
+                }
+                console.log("change password result: ", result);
+                res.json({ success: true });
+            });
+    } else {
+        res.json({ error: "Please fill the required fields correctly." });
+    }
 });
 // End Login
 
@@ -181,7 +208,7 @@ app.get("/outstanding_mail", loggedIn, (req, res) => {
 app.post("/outstanding_mail", loggedIn, (req, res) => {
     console.log("changing outstanding mail status");
     sql.query(connectionString,
-        `UPDATE Mail SET Status = ${req.body.status} WHERE MID = ${req.body.MID}`,
+        `UPDATE Mail SET Status = 3, SendBackDate = GETDATE() WHERE MID = ${req.body.MID}`,
         (err, result) => {
             if (err) {
                 console.log(1, err);
@@ -215,7 +242,7 @@ app.post("/pickup", loggedIn, (req, res) => {
 app.get("/mail", loggedIn, (req, res) => {
     console.log("getting all mail");
     sql.query(connectionString,
-        "SELECT * FROM Mail",
+        "SELECT * FROM Mail, Participant WHERE Mail.PID = Participant.PID",
         (err, results) => {
             if (err) {
                 console.log(1, err);
@@ -229,7 +256,7 @@ app.get("/mail", loggedIn, (req, res) => {
 app.post("/mail", loggedIn, (req, res) => {
     console.log("getting mail for certain participant");
     sql.query(connectionString,
-        `SELECT * FROM Mail WHERE PID = ${res.body.PID}`,
+        `SELECT * FROM Mail WHERE PID = ${req.body.PID}`,
         (err, results) => {
             if (err) {
                 console.log(1, err);
@@ -274,27 +301,6 @@ app.delete("/mail", loggedIn, (req, res) => {
         });
 });
 // End Mail
-
-// Account
-app.post("/change_password", loggedIn, (req, res) => {
-    console.log("change password");
-    if (checkPassword(req.body)) {
-        sql.query(connectionString,
-            `UPDATE Users SET Password = '${req.body.new1}' WHERE UID = ${req.body.UID} AND Password = '${req.body.old}'`,
-            (err, result) => {
-                if (err) {
-                    console.log(1, err);
-                    res.json({ error: "Error while changing password" });
-                    return;
-                }
-                console.log("change password result: ", result);
-                res.json({ success: true });
-            });
-    } else {
-        res.json({ error: "Please fill the required fields correctly." });
-    }
-});
-// End Account
 
 function loggedIn(req, res, next) {
     console.log(req.user);

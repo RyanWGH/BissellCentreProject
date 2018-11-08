@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="../../css/tablestyle.css">
 
 <div id="page">
-<div align="center"><font size=14><b>(Name)'s Mail</b></font></div>
+<div align="center"><font size=14><b id="participantName"></b></font></div>
 
 <input type="text" id="searchList" onkeyup="myFunction()" placeholder="Search through mail..."></input>
 
@@ -43,7 +43,7 @@
     <th>Sender Name</th>
     <th>Date Received</th>
     <th>Signature</th>
-    <th></th>
+    <th>Picked Up</th>
   </tr>
 </table>
 
@@ -56,51 +56,72 @@
     table = document.getElementById("PersonalTable");
     tr = table.getElementsByTagName('tr');
 
-    console.log(filter);
     for (var i = 0; i < tr.length; i++) {
       checkvalue = 0;
 
       td= tr[i].getElementsByClassName("searchable");
-      console.log(td);
       if(td.length){
         for (var j = 0; j < td.length; j++) {
-          console.log(td[j].innerHTML.toUpperCase());
           if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
             checkvalue = 1;
             break;
           }
         }
         if (checkvalue == 1) {
-          console.log("True");
           tr[i].style.display = "";
         }
         else {
-          console.log("False");
           tr[i].style.display = "none";
         }
       }
     }
   }
 
-  function personalmail(sn, dr, sig) {
-      return `<tr>
-      <td class="searchable SenderName">${sn}</td>
-      <td class="searchable DateReceived">${dr}</td>
-      <td class="searchable Signature">${sig}</td>
-      <td><button class="btn btn-primary view">Pick Up</button></td>
-      </tr>`;
-  }// Need to make it so the button can change the status of the mail to picked up
+  function personalmail(m) {
+      let tr = `<tr>
+      <td class="searchable SenderName">${m.SenderName}</td>
+      <td class="searchable DateReceived">${new Date(m.Date).toDateString()}</td>
+      <td class="searchable Signature">N/A</td>`;
+      if (!m.PickUpDate) {
+          tr += `<td class="mid" style="display:none">${m.MID}</td>
+          <td><button class="btn btn-primary pickup">Pick Up</button></td>`
+      } else {
+          tr += `<td class="searchable PickUpDate">${new Date(m.PickUpDate).toDateString()}</td>`
+      }
+      tr += "</tr>";
+      return tr;
+  }
 
   $(document).ready(function() {
-      $.post("http://localhost:3000/mail") //Im not sure how to use this thing since
-                                          // it needs the PID
-        .done(function(data) {
-            for (let i of data) {
-                console.log(i);
-                $("#PersonalTable")
-                    .append(personalmail(i.FName, i.LName, i.Phone, i.Email));
-            }
-        });
+      $("#participantName").text(localStorage.getItem("participantName") + "'s Mail");
+
+      $.post(
+          "http://localhost:3000/mail",
+          { PID: localStorage.getItem("participantPID") }
+      )
+      .done(function(data) {
+          for (let i of data) {
+              $("#PersonalTable")
+                .append(personalmail(i));
+          }
+          $(".pickup").click(function() {
+              let MID = $(this).parent().parent().find(".mid").text();
+              $.post(
+                  "http://localhost:3000/pickup",
+                  { MID }
+              )
+              .done(function(data) {
+                  alert("Mail marked as picked up");
+                  location.reload();
+              })
+              .fail(function(data) {
+                  console.log(data);
+              });
+          });
+      });
   });
 
 </script>
+
+</body>
+</html>

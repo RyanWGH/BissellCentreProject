@@ -11,99 +11,101 @@
 </head>
 
 <body>
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">Bissell</a>
-    </div>
-    <ul class="nav navbar-nav navbar-left">
-      <li><a href="../ParticipantsList/index.html">Home</a></li>
-      <li><a href="../OutstandingMail/index.html">Outstanding Mail</a></li>
-      <li><a href="../MailList/index.html">Mail List</a></li>
-      <li><a href="../NewMail/index.html">Add Mail</a></li>
-      <li><a href="../NewParticipant/index.html">Add Participant</a></li>
-      <li><a href="../NewDonation/index.html">Add Donation</a></li>
-      <li><a href="../DonationList/index.html">Donation List</a></li>
-    </ul>
-	<u1 class="nav navbar-nav navbar-right">
-		<li><a href="../AccountSettings/index.html">Account Settings</a></li>
-		<li><a href="#">Logout</a></li>
-	</u1>
-  </div>
-</nav>
-<link rel="stylesheet" href="../../css/tablestyle.css">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Bissell</a>
+        </div>
+        <ul class="nav navbar-nav navbar-left">
+          <li><a href="../ParticipantsList/index.html">Home</a></li>
+          <li><a href="../OutstandingMail/index.html">Outstanding Mail</a></li>
+          <li><a href="../MailList/index.html">Mail List</a></li>
+          <li><a href="../NewMail/index.html">Add Mail</a></li>
+          <li><a href="../NewParticipant/index.html">Add Participant</a></li>
+          <li><a href="../NewDonation/index.html">Add Donation</a></li>
+          <li><a href="../DonationList/index.html">Donation List</a></li>
+        </ul>
+    	<u1 class="nav navbar-nav navbar-right">
+    		<li><a href="../AccountSettings/index.html">Account Settings</a></li>
+    		<li><a href="#">Logout</a></li>
+    	</u1>
+      </div>
+    </nav>
+    <link rel="stylesheet" href="../../css/tablestyle.css">
 
-<div id="page">
-<div align="center"><font size=14><b>Search List</b></font></div>
+    <div id="page">
+    <div align="center"><font size=14><b>Participants</b></font></div>
 
-<input type="text" id="searchList" onkeyup="myFunction()" placeholder="Search for participants..."></input>
+    <input type="text" id="searchList" onkeyup="myFunction()" placeholder="Search for participants..."></input>
 
-<table id="ParticipantsTables">
-  <tr>
-    <th>Picture</th>
-    <th>First Name</th>
-    <th>Last Name</th>
-    <th>Phone Number</th>
-    <th>Email</th>
-    <th></th>
-  </tr>
-</table>
+    <table id="ParticipantsTables">
+      <tr>
+        <th>Picture</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Phone Number</th>
+        <th>Email</th>
+        <th></th>
+      </tr>
+    </table>
 
-<script>
+    <script>
+    function myFunction() {
+        var input, filter, table, tr, td, i, j, checkvalue;
+        input = document.getElementById('searchList');
+        filter = input.value.toUpperCase();
+        table = document.getElementById("ParticipantsTables");
+        tr = table.getElementsByTagName('tr');
 
-  function myFunction() {
-    var input, filter, table, tr, td, i, j, checkvalue;
-    input = document.getElementById('searchList');
-    filter = input.value.toUpperCase();
-    table = document.getElementById("ParticipantsTables");
-    tr = table.getElementsByTagName('tr');
-
-    console.log(filter);
-    for (var i = 0; i < tr.length; i++) {
-      checkvalue = 0;
-
-      td= tr[i].getElementsByClassName("searchable");
-      console.log(td);
-      if(td.length){
-        for (var j = 0; j < td.length; j++) {
-          console.log(td[j].innerHTML.toUpperCase());
-          if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
-            checkvalue = 1;
-            break;
-          }
-        }
-        if (checkvalue == 1) {
-          console.log("True");
-          tr[i].style.display = "";
-        }
-        else {
-          console.log("False");
-          tr[i].style.display = "none";
-        }
-      }
-    }
-  }
-
-  function participant(fn, ln, ph, em, pic) {
-      return `<tr>
-      <td class="picture">N/A</td>
-      <td class="searchable firstName">${fn}</td>
-      <td class="searchable lastName">${ln}</td>
-      <td class="searchable phoneNumber">${ph}</td>
-      <td class="searchable email">${em}</td>
-      <td><button class="btn btn-primary view">View</button></td>
-      </tr>`;
-  }
-
-  $(document).ready(function() {
-      $.get("http://localhost:3000/participant")
-        .done(function(data) {
-            for (let i of data) {
-                console.log(i);
-                $("#ParticipantsTables")
-                    .append(participant(i.FName, i.LName, i.Phone, i.Email));
+        for (var i = 0; i < tr.length; i++) {
+            checkvalue = 0;
+            td = tr[i].getElementsByClassName("searchable");
+            if (td.length) {
+                for (var j = 0; j < td.length; j++) {
+                    if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        checkvalue = 1;
+                        break;
+                    }
+                }
+                if (checkvalue == 1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
             }
-        });
-  });
+        }
+    }
 
-</script>
+    function participant(fn, ln, ph, em, pid, pic) {
+        return `<tr>
+            <td class="picture">N/A</td>
+            <td class="searchable firstName">${fn}</td>
+            <td class="searchable lastName">${ln}</td>
+            <td class="searchable phoneNumber">${ph}</td>
+            <td class="searchable email">${em}</td>
+            <td class="pid" style="display:none">${pid}</td>
+            <td><button class="btn btn-primary view">View</button></td>
+            </tr>`;
+    }
+
+    $(document).ready(function() {
+        $.get("http://localhost:3000/participant")
+            .done(function(data) {
+                for (let i of data) {
+                    $("#ParticipantsTables")
+                        .append(participant(i.FName, i.LName, i.Phone, i.Email, i.PID));
+                }
+                $(".view").click(function() {
+                    let PID = $(this).parent().parent().find(".pid").text();
+                    let fn = $(this).parent().parent().find(".firstName").text();
+                    let ln = $(this).parent().parent().find(".lastName").text();
+
+                    localStorage.setItem("participantPID", PID);
+                    localStorage.setItem("participantName", fn + " " + ln);
+                    window.location.href = "../PersonalMailList/index.html";
+                });
+            });
+    });
+    </script>
+</body>
+</html>

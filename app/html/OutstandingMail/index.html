@@ -34,120 +34,54 @@
 <div id="page">
 <div align="center"><font size=14><b>Outstanding Mail</b></font></div>
 
-	<table id="outstandingMailList">
-		<tr>
-			<th>Picture</th>
-			<th>First Name</th>
-			<th>Last Name</th>
-			<th>Phone Number</th>
-			<th>Email</th>
-			<th>Mail Company</th>
-			<th>Date Received</th>
-			<th>Delete</th>
-		</tr>
+<table id="outstandingMailList">
     <tr>
-      <td class="picture">N/A</td>
-      <td class="searchable firstName">Ryan</td>
-      <td class="searchable lastName">Hancock</td>
-      <td class="searchable phoneNumber">587-646-5931</td>
-      <td class="searchable email">ryanwgh@hotmail.com</td>
-      <td class="searchable sender">Government Of Alberta</td>
-      <td class="searchable date">08/15/1994</td>
-      <td><button class="btn btn-primary return">Return</button></td>
-
-    </tr>
-    <tr>
-      <td class="picture">N/A</td>
-      <td class="searchable firstName">Olivier</td>
-      <td class="searchable lastName">Houle</td>
-      <td class="searchable phoneNumber">587-999-3333</td>
-      <td class="searchable email">houle02@hotmail.com</td>
-      <td class="searchable sender">Walmart</td>
-      <td class="searchable date">08/15/2018</td>
-      <td><button class="btn btn-primary return">Return</button></td>
-
-    </tr>
-    <tr>
-      <td class="picture">N/A</td>
-      <td class="searchable firstName">Maxime</td>
-      <td class="searchable lastName">Houle</td>
-      <td class="searchable phoneNumber">780-646-2222</td>
-      <td class="searchable email">maxime@gmail.com</td>
-      <td class="searchable sender">University of Alberta</td>
-      <td class="searchable date">11/11/2018</td>
-      <td><button class="btn btn-primary return">Return</button></td>
-
-    </tr>
-    <tr>
-      <td class="picture">N/A</td>
-      <td class="searchable firstName">Bob</td>
-      <td class="searchable lastName">Mcsirton</td>
-      <td class="searchable phoneNumber">123-456-7890</td>
-      <td class="searchable email">bobbybrown@yahoo.com</td>
-      <td class="searchable sender">Government Of Saskatoon</td>
-      <td class="searchable date">12/12/1212</td>
-      <td><button class="btn btn-primary return">Return</button></td>
-
-    </tr>
+        <th>Participant</th>
+		<th>Sender</th>
+		<th>Received</th>
+		<th>Return</th>
+	</tr>
+</table>
 
 </div>
 
 <script>
 
-	function returnMail(id) {
-		$.post("/")
-	}
+function personalmail(m) {
+    let tr = `<tr>
+    <td class="searchable Participant">${m.FName} ${m.LName}</td>
+    <td class="searchable SenderName">${m.SenderName}</td>
+    <td class="searchable DateReceived">${new Date(m.Date).toDateString()}</td>
+    <td class="mid" style="display:none">${m.MID}</td>
+    <td><button class="btn btn-primary return">Return</button></td>
+    </tr>`;
+    return tr;
+}
 
-	$( document ).ready(function(){
-		$.get("http://localhost:3000/outstanding_mail")
-        .done((data) => {
-            console.log(data);
-			/*let outstandingMail = JSON.parse(data);
-			for (let i of outstandingMail) {
-				$("#outstandingMailList").append(`<tr>
-					<td class="Picture">${i.}</td>
-					<td class="FirstName">${i.}</td>
-					<td class="LastName">${i.}</td>
-					<td class="PhoneNumber">${i.}</td>
-					<td class="Email">${i.}</td>
-					<td class="Sender">${i.}</td>
-					<td class="Date">${i.}</td>
+$(document).ready(function() {
+    $.get("http://localhost:3000/outstanding_mail")
+    .done((data) => {
+        for (let i of data) {
+            $("#outstandingMailList").append(personalmail(i));
+        }
+        $(".return").click(function() {
+            let MID = $(this).parent().parent().find(".mid").text();
+            $.post(
+                "http://localhost:3000/outstanding_mail",
+                { MID }
+            )
+            .done(function(data) {
+                alert("Mail marked as returned");
+                location.reload();
+            })
+            .fail(function(data) {
+                console.log(data);
+            });
+        });
+    });
+});
 
-					<td><button class="btn btn-primary return">Return</button></td>
-					</tr>
-					`);
-			}
-
-			$('.return').click(function() {
-				returnOutstandingMail($(this).parent().parent().find('.mid').text())
-			});*/
-
-		});
-	});
-
-    /*function mail(fn, ln, ph, em, pic) {
-        return `<tr>
-        <td class="picture">N/A</td>
-        <td class="searchable firstName">${fn}</td>
-        <td class="searchable lastName">${ln}</td>
-        <td class="searchable phoneNumber">${ph}</td>
-        <td class="searchable email">${em}</td>
-        <td><button class="btn btn-primary view">View</button></td>
-        </tr>`;
-    }*/
-
-    /*$(document).ready(function() {
-        $.get("http://localhost:3000/participant")
-          .done(function(data) {
-              for (let i of data) {
-                  console.log(i);
-                  $("#ParticipantsTables")
-                      .append(participant(i.FName, i.LName, i.Phone, i.Email));
-              }
-          });
-    });*/
-
-	</script>
+</script>
 
 </body>
 </html>
