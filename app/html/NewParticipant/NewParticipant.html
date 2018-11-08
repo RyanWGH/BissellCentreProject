@@ -62,6 +62,10 @@ $(document).ready(function() {
         })
         .done(function(data) {
             console.log(data);
+        })
+        .fail(function(data) {
+            console.log(data);
+            alert("Failed to add participant");
         });
         event.preventDefault();
         return false;
