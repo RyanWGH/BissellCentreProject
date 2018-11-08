@@ -293,12 +293,13 @@ app.post("/change_password", loggedIn, (req, res) => {
 
 function loggedIn(req, res, next) {
     console.log(req.user);
-    if (req.user) {
+    next();
+    /*if (req.user) {
         next();
     } else {
         console.log("not logged in");
         res.json({ error: "Not logged in" });
-    }
+    }*/
 }
 
 function checkNewParticipant(p) {
