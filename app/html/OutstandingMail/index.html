@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="../../js/jquery-3.3.1.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
@@ -93,13 +94,15 @@
 
 <script>
 
-	/*function returnMail(id) {
+	function returnMail(id) {
 		$.post("/")
 	}
 
 	$( document ).ready(function(){
-		$.get("/getOutstandingMailList", (data) => {
-			let outstandingMail = JSON.parse(data);
+		$.get("http://localhost:3000/outstanding_mail")
+        .done((data) => {
+            console.log(data);
+			/*let outstandingMail = JSON.parse(data);
 			for (let i of outstandingMail) {
 				$("#outstandingMailList").append(`<tr>
 					<td class="Picture">${i.}</td>
@@ -117,9 +120,32 @@
 
 			$('.return').click(function() {
 				returnOutstandingMail($(this).parent().parent().find('.mid').text())
-			});
+			});*/
+
 		});
-	});*/
+	});
+
+    /*function mail(fn, ln, ph, em, pic) {
+        return `<tr>
+        <td class="picture">N/A</td>
+        <td class="searchable firstName">${fn}</td>
+        <td class="searchable lastName">${ln}</td>
+        <td class="searchable phoneNumber">${ph}</td>
+        <td class="searchable email">${em}</td>
+        <td><button class="btn btn-primary view">View</button></td>
+        </tr>`;
+    }*/
+
+    /*$(document).ready(function() {
+        $.get("http://localhost:3000/participant")
+          .done(function(data) {
+              for (let i of data) {
+                  console.log(i);
+                  $("#ParticipantsTables")
+                      .append(participant(i.FName, i.LName, i.Phone, i.Email));
+              }
+          });
+    });*/
 
 	</script>
 

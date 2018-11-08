@@ -167,7 +167,7 @@ app.post("/senders", loggedIn, (req, res) => {
 app.get("/outstanding_mail", loggedIn, (req, res) => {
     console.log("getting outstanding mail");
     sql.query(connectionString,
-        "SELECT * FROM Mail WHERE DATEDIFF(day, GETDATE(), Date) >= 60 AND Status = 0",
+        "SELECT * FROM Mail, Participant WHERE Mail.PID = Participant.PID AND DATEDIFF(day, Date, GETDATE()) >= 60 AND Status = 0",
         (err, results) => {
             if (err) {
                 console.log(1, err);
