@@ -28,14 +28,19 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-    console.log("deserialize user");
+    console.log("deserialize user: ", id);
     sql.query(connectionString,
-        `SELECT * FROM Users WHERE UID = '${id}`,
+        `SELECT * FROM Users WHERE UID = ${id}`,
         (err, results) => {
-            console.log("deserialize query");
-            if (err || !results.length) {
+            console.log("deserialized query");
+            if (err) {
                 console.log("fail");
                 return done(null, false, { message: "Error getting login" });
+            }
+            console.log(results);
+            if (!results.length) {
+                console.log("fail 2");
+                return done(null, false, { message: "Error 2 getting login" });
             }
             console.log("success");
             return done(null, results[0]);
@@ -293,13 +298,12 @@ app.post("/change_password", loggedIn, (req, res) => {
 
 function loggedIn(req, res, next) {
     console.log(req.user);
-    next();
-    /*if (req.user) {
+    if (req.user) {
         next();
     } else {
         console.log("not logged in");
         res.json({ error: "Not logged in" });
-    }*/
+    }
 }
 
 function checkNewParticipant(p) {
