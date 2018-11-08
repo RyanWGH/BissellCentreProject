@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="../../js/jquery-3.3.1.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
+
 <body>
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -31,63 +34,16 @@
 <link rel="stylesheet" href="../../css/tablestyle.css">
 
 <div id="page">
-<div align="center"><font size=14><b>Search List</b></font></div>
+<div align="center"><font size=14><b>(Name)'s Mail</b></font></div>
 
-<input type="text" id="searchList" onkeyup="myFunction()" placeholder="Search for participants..."></input>
-  <table id="ParticipantsTables">
+<input type="text" id="searchList" onkeyup="myFunction()" placeholder="Search through mail..."></input>
+
+<table id="PersonalTable">
   <tr>
-    <th>Picture</th>
-    <th>First Name</th>
-    <th>Last Name</th>
-    <th>Phone Number</th>
-    <th>Email</th>
-    <th>Mail Company</th>
+    <th>Sender Name</th>
     <th>Date Received</th>
+    <th>Signature</th>
     <th></th>
-  </tr>
-  <tr>
-    <td class="picture">N/A</td>
-    <td class="searchable firstName">Ryan</td>
-    <td class="searchable lastName">Hancock</td>
-    <td class="searchable phoneNumber">587-646-5931</td>
-    <td class="searchable email">ryanwgh@hotmail.com</td>
-    <td class="searchable sender">Government Of Alberta</td>
-    <td class="searchable date">08/15/1994</td>
-    <td><button class="btn btn-primary pickup">Pick Up</button></td>
-
-  </tr>
-  <tr>
-    <td class="picture">N/A</td>
-    <td class="searchable firstName">Olivier</td>
-    <td class="searchable lastName">Houle</td>
-    <td class="searchable phoneNumber">587-999-3333</td>
-    <td class="searchable email">houle02@hotmail.com</td>
-    <td class="searchable sender">Walmart</td>
-    <td class="searchable date">08/15/2018</td>
-    <td><button class="btn btn-primary pickup">Pick Up</button></td>
-
-  </tr>
-  <tr>
-    <td class="picture">N/A</td>
-    <td class="searchable firstName">Maxime</td>
-    <td class="searchable lastName">Houle</td>
-    <td class="searchable phoneNumber">780-646-2222</td>
-    <td class="searchable email">maxime@gmail.com</td>
-    <td class="searchable sender">University of Alberta</td>
-    <td class="searchable date">11/11/2018</td>
-    <td><button class="btn btn-primary pickup">Pick Up</button></td>
-
-  </tr>
-  <tr>
-    <td class="picture">N/A</td>
-    <td class="searchable firstName">Bob</td>
-    <td class="searchable lastName">Mcsirton</td>
-    <td class="searchable phoneNumber">123-456-7890</td>
-    <td class="searchable email">bobbybrown@yahoo.com</td>
-    <td class="searchable sender">Government Of Saskatoon</td>
-    <td class="searchable date">12/12/1212</td>
-    <td><button class="btn btn-primary pickup">Pick Up</button></td>
-
   </tr>
 </table>
 
@@ -97,7 +53,7 @@
     var input, filter, table, tr, td, i, j, checkvalue;
     input = document.getElementById('searchList');
     filter = input.value.toUpperCase();
-    table = document.getElementById("ParticipantsTables");
+    table = document.getElementById("PersonalTable");
     tr = table.getElementsByTagName('tr');
 
     console.log(filter);
@@ -125,5 +81,26 @@
       }
     }
   }
+
+  function personalmail(sn, dr, sig) {
+      return `<tr>
+      <td class="searchable SenderName">${sn}</td>
+      <td class="searchable DateReceived">${dr}</td>
+      <td class="searchable Signature">${sig}</td>
+      <td><button class="btn btn-primary view">Pick Up</button></td>
+      </tr>`;
+  }// Need to make it so the button can change the status of the mail to picked up
+
+  $(document).ready(function() {
+      $.post("http://localhost:3000/mail") //Im not sure how to use this thing since
+                                          // it needs the PID
+        .done(function(data) {
+            for (let i of data) {
+                console.log(i);
+                $("#PersonalTable")
+                    .append(personalmail(i.FName, i.LName, i.Phone, i.Email));
+            }
+        });
+  });
 
 </script>
