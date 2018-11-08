@@ -69,12 +69,12 @@ passport.use(new LocalStrategy((username, password, done) => {
 // Login
 app.post("/login", passport.authenticate("local"), (req, res) => {
     console.log("authed");
-    res.json({id: req.user.UID});
+    res.json({UID: req.user.UID});
 });
 // End Login
 
 // Participant
-app.get("/participant", (req, res) => {
+app.get("/participant", loggedIn, (req, res) => {
     console.log("getting participants");
     sql.query(connectionString,
         "SELECT * FROM Participant",
@@ -88,7 +88,7 @@ app.get("/participant", (req, res) => {
         });
 });
 
-app.put("/participant", (req, res) => {
+app.put("/participant", loggedIn, (req, res) => {
     console.log("putting a new participant");
     console.log(req.body);
     if (checkNewParticipant(req.body)) {
@@ -107,7 +107,7 @@ app.put("/participant", (req, res) => {
     }
 });
 
-app.post("/participant", (req, res) => {
+app.post("/participant", loggedIn, (req, res) => {
     console.log("get participant info");
     console.log(req.body);
     if (checkParticipant(req.body)) {
@@ -126,7 +126,7 @@ app.post("/participant", (req, res) => {
     }
 });
 
-app.delete("/participant", (req, res) => {
+app.delete("/participant", loggedIn, (req, res) => {
     console.log("delete a participant");
     sql.query(connectionString,
         `DELETE FROM Participant WHERE PID = ${req.body.PID}`,
@@ -143,7 +143,7 @@ app.delete("/participant", (req, res) => {
 // End Participants
 
 // Senders
-app.post("/senders", (req, res) => {
+app.post("/senders", loggedIn, (req, res) => {
     console.log("getting list of senders for participant");
     sql.query(connectionString,
         `SELECT SenderName FROM Mail WHERE PID = ${req.body.PID}`,
@@ -159,7 +159,7 @@ app.post("/senders", (req, res) => {
 // End Senders
 
 // Oustanding Mail
-app.get("/outstanding_mail", (req, res) => {
+app.get("/outstanding_mail", loggedIn, (req, res) => {
     console.log("getting outstanding mail");
     sql.query(connectionString,
         "SELECT * FROM Mail WHERE DATEDIFF(day, GETDATE(), Date) >= 60 AND Status = 0",
@@ -173,7 +173,7 @@ app.get("/outstanding_mail", (req, res) => {
         });
 });
 
-app.post("/outstanding_mail", (req, res) => {
+app.post("/outstanding_mail", loggedIn, (req, res) => {
     console.log("changing outstanding mail status");
     sql.query(connectionString,
         `UPDATE Mail SET Status = ${req.body.status} WHERE MID = ${req.body.MID}`,
@@ -190,7 +190,7 @@ app.post("/outstanding_mail", (req, res) => {
 // End Outstanding Mail
 
 // Pick up
-app.post("/pickup", (req, res) => {
+app.post("/pickup", loggedIn, (req, res) => {
     console.log("setting mail status to picked up");
     sql.query(connectionString,
         `UPDATE Mail SET Status = 1, PickUpDate = GETDATE() WHERE MID = ${req.body.MID}`,
@@ -207,7 +207,7 @@ app.post("/pickup", (req, res) => {
 // End Pick up
 
 // Mail
-app.get("/mail", (req, res) => {
+app.get("/mail", loggedIn, (req, res) => {
     console.log("getting all mail");
     sql.query(connectionString,
         "SELECT * FROM Mail",
@@ -221,7 +221,7 @@ app.get("/mail", (req, res) => {
         });
 });
 
-app.post("/mail", (req, res) => {
+app.post("/mail", loggedIn, (req, res) => {
     console.log("getting mail for certain participant");
     sql.query(connectionString,
         `SELECT * FROM Mail WHERE PID = ${res.body.PID}`,
@@ -235,7 +235,7 @@ app.post("/mail", (req, res) => {
         });
 });
 
-app.put("/mail", (req, res) => {
+app.put("/mail", loggedIn, (req, res) => {
     console.log("adding new mail");
     console.log(req.body);
     if (checkMail(req.body)) {
@@ -254,7 +254,7 @@ app.put("/mail", (req, res) => {
     }
 });
 
-app.delete("/mail", (req, res) => {
+app.delete("/mail", loggedIn, (req, res) => {
     console.log("delete a mail");
     sql.query(connectionString,
         `DELETE FROM Mail WHERE MID = ${req.body.MID}`,
@@ -271,7 +271,7 @@ app.delete("/mail", (req, res) => {
 // End Mail
 
 // Account
-app.post("/change_password", (req, res) => {
+app.post("/change_password", loggedIn, (req, res) => {
     console.log("change password");
     if (checkPassword(req.body)) {
         sql.query(connectionString,
@@ -290,6 +290,16 @@ app.post("/change_password", (req, res) => {
     }
 });
 // End Account
+
+function loggedIn(req, res, next) {
+    console.log(req.user);
+    if (req.user) {
+        next();
+    } else {
+        console.log("not logged in");
+        res.json({ error: "Not logged in" });
+    }
+}
 
 function checkNewParticipant(p) {
     // later add picture check

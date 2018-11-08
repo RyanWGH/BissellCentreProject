@@ -12,8 +12,8 @@ app.on("ready", function(){
     mainWindow = new BrowserWindow({});
     //Load html file in new window
     mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, "mainWindow.html"),
+        pathname: path.join(__dirname, "html/LogIn/index.html"),
         protocol: "file:",
         slahes: true
-    }));  
+    }));
 });
