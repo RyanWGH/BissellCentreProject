@@ -63,6 +63,8 @@ $(document).ready(function() {
         })
         .done(function(data) {
             console.log(data);
+            alert("Successfully added a new participant!");
+            $("#put-participant").trigger("reset");
         })
         .fail(function(data) {
             console.log(data);
