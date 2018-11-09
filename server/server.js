@@ -302,6 +302,72 @@ app.delete("/mail", loggedIn, (req, res) => {
 });
 // End Mail
 
+//Donation
+app.get("/donation", loggedIn, (req, res) => {
+    console.log("getting all mail");
+    sql.query(connectionString,
+        "SELECT * FROM Donation, Donor, DonationItem WHERE Donation.DID = DonationItem.DID AND Donation.DonorID = Donor.DonorID",
+        (err, results) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while getting donation" });
+                return;
+            }
+            res.json(results);
+        });
+});
+
+app.post("/donation", loggedIn, (req, res) => {
+    console.log("getting donation information from a certain donor");
+    sql.query(connectionString,
+        `SELECT * FROM Donation WHERE DonorID = ${req.body.DonorID}`,
+        (err, results) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while getting Donor's donations" });
+                return;
+            }
+            res.json(results);
+        });
+});
+
+app.put("/donation", loggedIn, (req, res) => {
+    console.log("adding new donation");
+    console.log(req.body);
+    if (checkDonation(req.body)) {
+        sql.query(connectionString,
+            `INSERT INTO Donor VALUES(${req.body.Email}, '${req.body.Phone}','${req.body.FName}','${req.body.LName}', '${req.body.Company}', GETDATE());
+            INSERT INTO DonationItem VALUES ('${req.body.Description}', GETDATE(), ${req.body.DonorID});
+            INSERT INTO Donation VALUES (${req.body.DID}, ${req.body.DonorID}, GETDATE())`,
+            (err) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while inserting a new donation" });
+                    return;
+                }
+                res.json({ success: true });
+            });
+    } else {
+        res.json({ error: "Please fill the required fields." });
+    }
+});
+
+app.delete("/donation", loggedIn, (req, res) => {
+    console.log("delete a donation");
+    sql.query(connectionString,
+        `DELETE FROM Donation WHERE DonationID = ${req.body.DonationID}`,
+        (err, result) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while deleting a donation" });
+                return;
+            }
+            console.log("delete donation result: ", result);
+            res.json({ success: true });
+        });
+});
+//End Donation
+
 function loggedIn(req, res, next) {
     console.log(req.user);
     if (req.user) {
@@ -324,6 +390,9 @@ function checkMail(m) {
 
 function checkParticipant(p) {
     return p.PID;
+}
+function checkDonation(d) {
+  return d.DID && d.DonorID;
 }
 
 function checkPassword(p) {
