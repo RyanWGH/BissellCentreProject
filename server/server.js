@@ -242,7 +242,7 @@ app.post("/pickup", loggedIn, (req, res) => {
 app.get("/mail", loggedIn, (req, res) => {
     console.log("getting all mail");
     sql.query(connectionString,
-        "SELECT * FROM Mail, Participant WHERE Mail.PID = Participant.PID",
+        "SELECT * FROM Mail, Participant WHERE Mail.PID = Participant.PID  ORDER BY Status ASC",
         (err, results) => {
             if (err) {
                 console.log(1, err);
@@ -256,7 +256,7 @@ app.get("/mail", loggedIn, (req, res) => {
 app.post("/mail", loggedIn, (req, res) => {
     console.log("getting mail for certain participant");
     sql.query(connectionString,
-        `SELECT * FROM Mail WHERE PID = ${req.body.PID}`,
+        `SELECT * FROM Mail WHERE PID = ${req.body.PID} ORDER BY Status ASC`,
         (err, results) => {
             if (err) {
                 console.log(1, err);
