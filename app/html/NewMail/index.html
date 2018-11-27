@@ -100,7 +100,7 @@
     <input id="myInput" type="text" name="PID" placeholder="Participant">
   </div>
   <div class="autocomplete" style="width:300px;">
-    <input id="SenderInput" type="text" name="SenderName" placeholder="Mailing Company">
+    <input id="SenderInput" type="text" name="SenderName" placeholder="Sender">
   </div>
   <input type="submit" class="btn btn-primary btn-lg" style="width: 100px; height: 40px;" value="Submit">
     </form>
@@ -114,14 +114,11 @@ var ParList = {};
 $(document).ready(function() {
   $.get("http://localhost:3000/participant")
     .done(function(data) {
-      var FullName = "";
       for (let item of data) {
-        FullName= item.FName+" "+item.LName;
-
-        ParList[item.PID]=FullName;
+        ParList[item.PID] = `${item.FName} ${item.LName}`;
       }
       autocomplete(document.getElementById("myInput"), ParList, 1);
-      //autocomplete(document.getElementById("SenderInput"), SNameList, 2);
+      autocomplete(document.getElementById("SenderInput"), SNameList, 2);
 
     });
 
@@ -129,15 +126,27 @@ $(document).ready(function() {
         console.log("submit");
         console.log($("#put-mail").serialize());
         var SenderString = $("#SenderInput").serialize();
+        console.log(SenderString);
         var datastring = "PID=" + currentParValue + "&" + SenderString;
+
+        let data = {
+            PID: currentParValue,
+            SenderName: $("#SenderInput").val()
+        };
         $.ajax({
             url:"http://localhost:3000/mail",
-            data: datastring,
+            data,
             type: "PUT"
         })
         .done(function(data) {
+            console.log(data);
+            if (data.error) {
+                alert("Failed to add new mail");
+                return;
+            }
             alert("Successfully added a new mail!");
             $("#put-mail").trigger("reset");
+            currentParValue = null;
         })
         .fail(function(data) {
             alert("Failed to add mail");
@@ -165,11 +174,8 @@ function autocomplete(inp, arr, type) {
       a.setAttribute("class", "autocomplete-items");
       /*append the DIV element as a child of the autocomplete container:*/
       this.parentNode.appendChild(a);
-      /*for each item in the array...*/
-      var arrLength = Object.keys(arr).length;
-      console.log(arrLength);
-      //THIS MIGHT BECOME A PROBLEM IF WE START DELETING PARTICIPANTS
-      for (i = 1; i < arrLength+1; i++) {
+
+      for (let i in arr) {
         /*check if the item starts with the same letters as the text field value:*/
         if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
           /*create a DIV element for each matching element:*/
@@ -189,7 +195,7 @@ function autocomplete(inp, arr, type) {
               if(type == 1){
                 currentParValue=inp.name;
                 console.log(currentParValue+"QUICK TEST");
-                //buildSNameList(currentParValue)
+                buildSNameList(currentParValue);
               }
               if(type == 2){
                 currentSenderName=inp.value;
@@ -239,13 +245,13 @@ function autocomplete(inp, arr, type) {
         { PID: par }
     )
     .done(function(data) {
+        console.log("got senders");
       var count=0;
       for (let item of data) {
-        ParList[count]=item.SenderName;
+        SNameList[count]=item.SenderName;
         count++;
       }
     });
-    return SNameList;
   }
   function addActive(x) {
     /*a function to classify an item as "active":*/
