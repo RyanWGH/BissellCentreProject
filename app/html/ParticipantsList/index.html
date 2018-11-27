@@ -76,9 +76,9 @@
         }
     }
 
-    function participant(fn, ln, ph, em, pid, pic) {
+    function participant(fn, ln, img, ph, em, pid, pic) {
         return `<tr>
-            <td class="picture">N/A</td>
+            <td class="picture"><img class="mb-4" src="../../../images/participants/${img}" alt="" style="max-width: 100px; max-height: 100px" align="centre"></img></td>
             <td class="searchable firstName">${fn}</td>
             <td class="searchable lastName">${ln}</td>
             <td class="searchable phoneNumber">${ph}</td>
@@ -93,7 +93,7 @@
             .done(function(data) {
                 for (let i of data) {
                     $("#ParticipantsTables")
-                        .append(participant(i.FName, i.LName, i.Phone, i.Email, i.PID));
+                        .append(participant(i.FName, i.LName, i.PImage, i.Phone, i.Email, i.PID));
                 }
                 $(".view").click(function() {
                     let PID = $(this).parent().parent().find(".pid").text();
