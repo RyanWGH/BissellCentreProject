@@ -103,7 +103,7 @@ app.post("/change_password", loggedIn, (req, res) => {
         res.json({ error: "Please fill the required fields correctly." });
     }
 });
-// End Login
+// End Account
 
 // Participant
 app.get("/participant", loggedIn, (req, res) => {
@@ -125,7 +125,7 @@ app.put("/participant", loggedIn, (req, res) => {
     console.log(req.body);
     if (checkNewParticipant(req.body)) {
         sql.query(connectionString,
-            `INSERT INTO Participant VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', 0)`,
+            `INSERT INTO Participant VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', 0, GETDATE())`,
             (err) => {
                 if (err) {
                     console.log(1, err);
@@ -225,7 +225,7 @@ app.post("/outstanding_mail", loggedIn, (req, res) => {
 app.post("/pickup", loggedIn, (req, res) => {
     console.log("setting mail status to picked up");
     sql.query(connectionString,
-        `UPDATE Mail SET Status = 1, PickUpDate = GETDATE() WHERE MID = ${req.body.MID}`,
+        `UPDATE Mail SET Status = 2, PickUpDate = GETDATE() WHERE MID = ${req.body.MID}`,
         (err, result) => {
             if (err) {
                 console.log(1, err);
@@ -272,7 +272,7 @@ app.put("/mail", loggedIn, (req, res) => {
     console.log(req.body);
     if (checkMail(req.body)) {
         sql.query(connectionString,
-            `INSERT INTO Mail VALUES(${req.body.PID}, '${req.body.SenderName}', GETDATE(), 0, null, null)`,
+            `INSERT INTO Mail VALUES(${req.body.PID}, '${req.body.SenderName}', GETDATE(), 0, null, null, null)`,
             (err) => {
                 if (err) {
                     console.log(1, err);
@@ -302,7 +302,7 @@ app.delete("/mail", loggedIn, (req, res) => {
 });
 // End Mail
 
-//Donation
+// Donation
 app.get("/donation", loggedIn, (req, res) => {
     console.log("getting all mail");
     sql.query(connectionString,
@@ -366,7 +366,7 @@ app.delete("/donation", loggedIn, (req, res) => {
             res.json({ success: true });
         });
 });
-//End Donation
+// End Donation
 
 function loggedIn(req, res, next) {
     console.log(req.user);
@@ -392,7 +392,7 @@ function checkParticipant(p) {
     return p.PID;
 }
 function checkDonation(d) {
-  return d.DID && d.DonorID;
+    return d.DID && d.DonorID;
 }
 
 function checkPassword(p) {
