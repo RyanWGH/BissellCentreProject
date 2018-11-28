@@ -18,12 +18,16 @@ const connectionString = "Driver={SQL Server Native Client 11.0};Server=localhos
 const textAddresses = [
     "txt.bellmobility.ca",
     "txt.bell.ca",
+    "text.mtsmobility.com",
     "fido.ca",
     "pcs.rogers.com",
     "msg.telus.com",
     "vmobile.ca",
     "msg.koodomobile.com",
     "txt.freedommobile.ca",
+    "txt.eastlink.ca",
+    "mobiletxt.ca",
+    "sms.sasktel.com"
 ];
 
 app.use(express.static("public"));
@@ -194,7 +198,7 @@ app.delete("/participant", loggedIn, (req, res) => {
 app.post("/senders", loggedIn, (req, res) => {
     console.log("getting list of senders for participant");
     sql.query(connectionString,
-        `SELECT SenderName FROM Mail WHERE PID = ${req.body.PID}`,
+        `SELECT DISTINCT SenderName FROM Mail WHERE PID = ${req.body.PID}`,
         (err, results) => {
             if (err) {
                 console.log(1, err);
