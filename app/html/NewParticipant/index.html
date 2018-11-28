@@ -55,13 +55,17 @@
 $(document).ready(function() {
     $("#put-participant").submit(function(event) {
         console.log("submit");
+        let formData = new FormData(this);
         $.ajax({
             url:"http://localhost:3000/participant",
-            data: $("#put-participant").serialize(),
+            data: formData,
+            contentType: false,
+            processData: false,
+            enctype: "multipart/form-data",
             type: "PUT"
         })
         .done(function(data) {
-            alert("Successfully added a new participant!");
+            alert(`Result: ${JSON.stringify(data)}`);
             $("#put-participant").trigger("reset");
         })
         .fail(function(data) {

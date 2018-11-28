@@ -4,13 +4,27 @@ const LocalStrategy = require("passport-local").Strategy;
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const sql = require("msnodesqlv8");
+const nodemailer = require("nodemailer");
 const multer = require("multer");
+const uploadSig = multer({ dest: "images/signatures/" });
+const uploadPic = multer({ dest: "images/participants/" });
 //const crypto = require("crypto");
 
 const app = express();
 const port = 3000;
 
 const connectionString = "Driver={SQL Server Native Client 11.0};Server=localhost;Database=BisselCentre;Trusted_Connection=yes";
+
+const textAddresses = [
+    "txt.bellmobility.ca",
+    "txt.bell.ca",
+    "fido.ca",
+    "pcs.rogers.com",
+    "msg.telus.com",
+    "vmobile.ca",
+    "msg.koodomobile.com",
+    "txt.freedommobile.ca",
+];
 
 app.use(express.static("public"));
 app.use(session({
@@ -121,9 +135,10 @@ app.get("/participant", loggedIn, (req, res) => {
         });
 });
 
-app.put("/participant", loggedIn, (req, res) => {
+app.put("/participant", loggedIn, uploadPic.single("pic"), (req, res) => {
     console.log("putting a new participant");
     console.log(req.body);
+    console.log(req.file);
     if (checkNewParticipant(req.body)) {
         sql.query(connectionString,
             `INSERT INTO Participant VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', 0, GETDATE())`,
