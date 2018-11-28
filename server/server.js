@@ -4,6 +4,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const sql = require("msnodesqlv8");
+const multer = require("multer");
 //const crypto = require("crypto");
 
 const app = express();
