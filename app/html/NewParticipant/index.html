@@ -49,7 +49,7 @@
     <input type="file" name="pic" accept="image/*">
     <p></p>
     <label for="NMethod">Notification Method:</label>
-    <input type="radio" name="NMethod" value=0> None 
+    <input type="radio" name="NMethod" value=0> None
     <input type="radio" name="NMethod" value=1> E-mail
     <input type="radio" name="NMethod" value=2> Phone
     <input type="radio" name="NMethod" value=3> Both<br>
@@ -60,14 +60,17 @@
 $(document).ready(function() {
     $("#put-participant").submit(function(event) {
         console.log("submit");
-        console.log($("#put-participant").serialize());
+        let formData = new FormData(this);
         $.ajax({
             url:"http://localhost:3000/participant",
-            data: $("#put-participant").serialize(),
+            data: formData,
+            contentType: false,
+            processData: false,
+            enctype: "multipart/form-data",
             type: "PUT"
         })
         .done(function(data) {
-            alert("Successfully added a new participant!");
+            alert(`Result: ${JSON.stringify(data)}`);
             $("#put-participant").trigger("reset");
         })
         .fail(function(data) {
