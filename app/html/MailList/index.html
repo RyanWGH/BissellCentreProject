@@ -80,17 +80,20 @@
 
   function mail(m) {
       let tr = `<tr>
-      <td class="Picture">N/A</td>
+      <td class="picture"><img class="mb-4" src="../../../images/participants/${m.PImage}" alt="" style="max-width: 100px; max-height: 100px" align="centre"></img></td>
       <td class="searchable ParticipantName">${m.FName} ${m.LName}</td>
       <td class="searchable SenderName">${m.SenderName}</td>
-      <td class="searchable DateReceived">${new Date(m.Date).toDateString()}</td>
-      <td class="searchable Signature">N/A</td>`;
+      <td class="searchable DateReceived">${new Date(m.Date).toDateString()}</td>`;
       if (m.PickUpDate) {
-          tr += `<td class="searchable PickUpDate">Picked up: ${new Date(m.PickUpDate).toDateString()}</td>`;
+          tr += `<td class="searchable Signature"><img class="mb-4" src="../../../images/signatures/${m.Signature}" alt="" style="max-width: 100px; max-height: 100px" align="centre"></img></td>
+          <td class="searchable PickUpDate">Picked up: ${new Date(m.PickUpDate).toDateString()}</td>`;
+
       } else if (m.SendBackDate) {
-          tr += `<td class="searchable SendBackDate">Sent back: ${new Date(m.SendBackDate).toDateString()}</td>`;
+          tr += `<td class="searchable Signature">N/A</td>
+          <td class="searchable SendBackDate">Sent back: ${new Date(m.SendBackDate).toDateString()}</td>`;
       } else {
           tr += `<td class="mid" style="display:none">${m.MID}</td>
+          <td class="searchable Signature">N/A</td>
           <td><button class="btn btn-primary pickup">Pick Up</button></td>`;
       }
       tr += "</tr>";

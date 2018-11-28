@@ -226,7 +226,7 @@ app.post("/outstanding_mail", loggedIn, (req, res) => {
 app.post("/pickup", loggedIn, (req, res) => {
     console.log("setting mail status to picked up");
     sql.query(connectionString,
-        `UPDATE Mail SET Status = 2, PickUpDate = GETDATE() WHERE MID = ${req.body.MID}`,
+        `UPDATE Mail SET Status = 2, PickUpDate = GETDATE(), Signature = 'Signature.png' WHERE MID = ${req.body.MID}`,
         (err, result) => {
             if (err) {
                 console.log(1, err);
