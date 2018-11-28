@@ -48,6 +48,11 @@
     <label for="Image">Picture:</label>
     <input type="file" name="pic" accept="image/*">
     <p></p>
+    <label for="NMethod">Notification Method:</label>
+    <input type="radio" name="NMethod" value=0> None 
+    <input type="radio" name="NMethod" value=1> E-mail
+    <input type="radio" name="NMethod" value=2> Phone
+    <input type="radio" name="NMethod" value=3> Both<br>
     <input type="submit" class="btn btn-primary btn-lg" style="width: 400px; height: 40px;" value="Submit">
 </form>
 
@@ -55,6 +60,7 @@
 $(document).ready(function() {
     $("#put-participant").submit(function(event) {
         console.log("submit");
+        console.log($("#put-participant").serialize());
         $.ajax({
             url:"http://localhost:3000/participant",
             data: $("#put-participant").serialize(),
