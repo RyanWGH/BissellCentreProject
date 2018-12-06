@@ -241,14 +241,14 @@ function autocomplete(inp, arr, type) {
   });
   function buildSNameList(par){
     $.post(
-        "http://localhost:3000/mail",
+        "http://localhost:3000/senders",
         { PID: par }
     )
     .done(function(data) {
         console.log("got senders");
       var count=0;
-      for (let item of data) {
-        SNameList[count]=item.SenderName;
+      for (let i of data) {
+        SNameList[count]=i.SenderName;
         count++;
       }
     });

@@ -13,6 +13,16 @@ const uploadPic = multer({ dest: "images/participants/" });
 const app = express();
 const port = 3000;
 
+const emailTransporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false,
+    auth: {
+        user: "bapvpex6epyjuz2q@ethereal.email",
+        pass: "mehNHfgKTkPAb9RHtE"
+    }
+});
+
 const connectionString = "Driver={SQL Server Native Client 11.0};Server=localhost;Database=BisselCentre;Trusted_Connection=yes";
 
 const textAddresses = [
@@ -299,6 +309,7 @@ app.put("/mail", loggedIn, (req, res) => {
                     res.json({ error: "Error while inserting mail" });
                     return;
                 }
+                sendNotif(req.body.PID, req.body.SenderName);
                 res.json({ success: true });
             });
     } else {
@@ -387,6 +398,102 @@ app.delete("/donation", loggedIn, (req, res) => {
         });
 });
 // End Donation
+
+function sendNotif(pid, sender) {
+    sql.query(connectionString,
+        `SELECT * FROM Participant WHERE PID = ${pid}`,
+        (err, results) => {
+            if (err) {
+                return console.log(1, err);
+            }
+            if (!results.length) {
+                return console.log(2, err);
+            }
+            let user = results[0];
+            if (user.NMethod & 1 && user.Email) {
+                let options = {
+                    from: "\"Bissell Centre\" <notifications@bissellcentre.org>",
+                    to: user.Email,
+                    subject: "New mail received",
+                    text: `You've received new mail from this sender: ${sender}
+                    Please pick up your mail within the next 60 days at the Bissell Centre. Our address is: blah`
+                };
+                emailTransporter.sendMail(options, (err, info) => {
+                    if (err) {
+                        console.log(3, err);
+                        return;
+                    }
+                    console.log(info);
+                });
+            }
+            if (user.NMethod & 2 && user.Phone) {
+                for (let i of textAddresses) {
+                    let options = {
+                        from: "\"Bissell Centre\" <notifications@bissellcentre.org>",
+                        to: `${user.Phone}@${i}`,
+                        subject: "New mail received",
+                        text: `You've received new mail from: ${sender}. Please pick up your mail at the Bissell Centre within the next 60 days.`
+                    };
+                    emailTransporter.sendMail(options, (err, info) => {
+                        if (err) {
+                            console.log(4, err);
+                            return;
+                        }
+                        console.log(i, info);
+                    });
+                }
+            }
+        });
+}
+
+/*function sendNotif(pid, sender) {
+    sql.query(connectionString,
+        `SELECT * FROM Participant WHERE PID = ${pid}`,
+        (err, results) => {
+            if (err) {
+                console.log(1, err);
+                return;
+            }
+            if (!results.length) {
+                console.log(2, err);
+                return;
+            }
+            let user = results[0];
+            if (user.NMethod & 1 && user.Email) {
+                let options = {
+                    from: "\"Bissell Centre\" <notifications@bissellcentre.org>",
+                    to: user.Email,
+                    subject: "New mail received",
+                    text: `You've received new mail from this sender: ${sender}
+                    Please pick up your mail within the next 60 days at the Bissell Centre. Our address is: blah`
+                };
+                emailTransporter.sendMail(options, (err, info) => {
+                    if (err) {
+                        console.log(3, err);
+                        return;
+                    }
+                    console.log(info);
+                });
+            }
+            if (user.NMethod & 2 && user.Phone) {
+                for (let i of textAddresses) {
+                    let options = {
+                        from: "\"Bissell Centre\" <notifications@bissellcentre.org>",
+                        to: `user.Phone@${i}`,
+                        subject: "New mail received",
+                        text: `You've received new mail from: ${sender}. Please pick up your mail at the Bissell Centre within the next 60 days.`
+                    };
+                    emailTransporter.sendMail(options, (err, info) => {
+                        if (err) {
+                            console.log(4, err);
+                            return;
+                        }
+                        console.log(i, info);
+                    });
+                }
+            }
+        });
+}*/
 
 function loggedIn(req, res, next) {
     console.log(req.user);
