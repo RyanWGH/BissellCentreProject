@@ -101,7 +101,7 @@ app.get("/logout", (req, res) => {
     if (req.user) {
         req.logout();
     }
-    res.json({ success: true });
+    res.json({success: true});
 });
 
 app.post("/change_password", loggedIn, (req, res) => {
@@ -191,6 +191,25 @@ app.delete("/participant", loggedIn, (req, res) => {
             console.log("delete participant result: ", result);
             res.json({ success: true });
         });
+});
+
+app.post("/edit-participant", loggedIn, (req, res) => {
+    console.log("get participant info");
+    console.log(req.body);
+    if (checkParticipant(req.body)) {
+        sql.query(connectionString,
+            `UPDATE Participant SET Email = ${req.body.Email} AND SET FName = ${req.body.FName} AND SET LName = ${req.body.LName} AND SET Phone = ${req.body.Phone} AND SET NMethod = ${req.body.NMethod} WHERE PID = ${req.body.PID}`,
+            (err, results) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while editing participant info" });
+                    return;
+                }
+                res.json(results);
+            });
+    } else {
+        res.json({ error: "Invalid request body" });
+    }
 });
 // End Participants
 
