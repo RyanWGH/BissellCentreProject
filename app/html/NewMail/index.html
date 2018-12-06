@@ -88,7 +88,7 @@
     </ul>
 	<u1 class="nav navbar-nav navbar-right">
 		<li><a href="../AccountSettings/index.html">Account Settings</a></li>
-		<li><a href="#">Logout</a></li>
+    <li><a href="#" onclick="logoutHandler">Logout</a></li>
 	</u1>
   </div>
 </nav>
@@ -286,7 +286,16 @@ function autocomplete(inp, arr, type) {
   document.addEventListener("click", function (e) {
       closeAllLists(e.target);
   });
-}
+  }
+  function logoutHandler(){
+    console.log("AM I BEING RUN?");
+      $.get(
+          "http://localhost:3000/logout",
+      )
+      .done(function(data) {
+          console.log("got senders");
+      });
+    }
 
 /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
 
