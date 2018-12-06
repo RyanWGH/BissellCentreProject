@@ -15,5 +15,10 @@
  - 4: Deleted
 
 ### User
+- NMethod (int):
+ - 0: No notifications
+ - 1: Email notifications
+ - 2: Text notifications
+ - 3: Both
 
 ### Donation
