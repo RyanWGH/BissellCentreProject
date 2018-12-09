@@ -247,7 +247,7 @@ app.put("/user", loggedIn, uploadPic.single("pic"), (req, res) => {
     console.log(req.file);
     if (checkNewParticipant(req.body)) {
         sql.query(connectionString,
-            `INSERT INTO Users VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', 0, GETDATE())`,
+            `INSERT INTO Users VALUES('${req.body.FName}', '${req.body.LName}', '${req.body.Phone}', '${req.body.Email}', '${req.body.Password}'`,
             (err) => {
                 if (err) {
                     console.log(1, err);
@@ -266,7 +266,7 @@ app.post("/user", loggedIn, (req, res) => {
     console.log(req.body);
     if (checkParticipant(req.body)) {
         sql.query(connectionString,
-            `SELECT * FROM Users WHERE PID = ${req.user.UID}`,
+            `SELECT * FROM Users WHERE UID = ${req.user.UID}`,
             (err, results) => {
                 if (err) {
                     console.log(1, err);
@@ -282,7 +282,7 @@ app.post("/user", loggedIn, (req, res) => {
 app.delete("/user", loggedIn, (req, res) => {
     console.log("delete a participant");
     sql.query(connectionString,
-        `DELETE FROM Users WHERE PID = ${req.user.UID}`,
+        `DELETE FROM Users WHERE UID = ${req.user.UID}`,
         (err, result) => {
             if (err) {
                 console.log(1, err);
@@ -299,26 +299,7 @@ app.post("/edit-user", loggedIn, (req, res) => {
     console.log(req.body);
     if (checkParticipant(req.body)) {
         sql.query(connectionString,
-            `UPDATE Users SET Email = ${req.body.Email} AND SET FName = ${req.body.FName} AND SET LName = ${req.body.LName} AND SET Phone = ${req.body.Phone} AND SET NMethod = ${req.body.NMethod} WHERE PID = ${req.body.PID}`,
-            (err, results) => {
-                if (err) {
-                    console.log(1, err);
-                    res.json({ error: "Error while editing User info" });
-                    return;
-                }
-                res.json(results);
-            });
-    } else {
-        res.json({ error: "Invalid request body" });
-    }
-});
-
-app.post("/edit-user-password", loggedIn, (req, res) => {
-    console.log("get User info");
-    console.log(req.body);
-    if (checkParticipant(req.body)) {
-        sql.query(connectionString,
-            `UPDATE Users SET Password = ${req.body.NPassword} WHERE UID = ${req.user.UID}`,
+            `UPDATE Users SET Email = ${req.body.Email}, SET FName = ${req.body.FName},  SET LName = ${req.body.LName}, SET Phone = ${req.body.Phone}, SET Email = ${req.body.Email} WHERE UID = ${req.user.UID}`,
             (err, results) => {
                 if (err) {
                     console.log(1, err);

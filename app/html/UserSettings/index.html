@@ -27,7 +27,7 @@
         </ul>
     	<u1 class="nav navbar-nav navbar-right">
     		<li><a href="../UserSettings/index.html">Account Settings</a></li>
-        <li><a href="http://localhost:3000/logout">Logout</a></li>
+        <li><a id="logout" href="#">Logout</a></li>
     	</u1>
       </div>
     </nav>
@@ -60,8 +60,25 @@
         <p></p>
 </body>
 <script>
+function logoutHandler(){
+    $.get(
+        "http://localhost:3000/logout",
+    )
+    .done(function(data) {
+        if (data.success) {
+          location.href = "../LogIn/index.html";
+        }
+    });
+  }
 $(document).ready(function() {
-        $("#edit-user").submit(function(event) {
+  $.get("http://localhost:3000/participant")
+      .done(function(data) {
+        document.getElementById('FName').value = data.FName;
+        document.getElementById('LName').value = data.LName;
+        document.getElementById('Phone').value = data.Phone;
+        document.getElementById('Email').value = data.Email;
+      });
+      $("#edit-user").submit(function(event) {
             console.log("submit");
                 let formData = new FormData(this);
                 $.ajax({
@@ -83,6 +100,7 @@ $(document).ready(function() {
                 event.preventDefault();
                 return false;
             });
+            $("#logout").click(logoutHandler);
 });
 </script>
 </html>
