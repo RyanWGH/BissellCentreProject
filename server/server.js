@@ -159,7 +159,7 @@ app.put("/participant", loggedIn, uploadPic.single("pic"), (req, res) => {
     console.log(req.file);
     if (checkNewParticipant(req.body)) {
         sql.query(connectionString,
-            `INSERT INTO Participant VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', 0, GETDATE())`,
+            `INSERT INTO Participant VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', '${req.body.NMethod}', GETDATE())`,
             (err) => {
                 if (err) {
                     console.log(1, err);

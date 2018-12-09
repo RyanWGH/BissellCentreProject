@@ -26,39 +26,37 @@
           <li><a href="../DonationList/index.html">Donation List</a></li>
         </ul>
     	<u1 class="nav navbar-nav navbar-right">
-    		<li><a href="../UserSettings/index.html">Account Settings</a></li>
+        <li><a href="../ChangePassword/index.html">Settings</a></li>
         <li><a id="logout" href="#">Logout</a></li>
     	</u1>
       </div>
     </nav>
 
     <main role="main" class="container">
-      <form id="edit-user">
+    <form id="edit-participant">
+        <label for="FirstName">First Name:</label>
+        <input type="text" id="FName" class="form-control" name="FName" style="width: 400px;">
+        <label for="LastName">Last Name:</label>
+        <input type="text" id="LName" class="form-control" name="LName" style="width: 400px;">
         <p></p>
-        <label for="FName">First Name: </label>
-        <input type="text" class="form-control" id="FName" name="FName" form="EditAccountForm" style="width: 275px;">
+        <label for="Phone">Phone Number:</label>
+        <input type="text" id="Phone" class="form-control" name="Phone" style="width: 400px;">
         <p></p>
-        <label for="LName">Last Name: </label>
-        <input type="text" class="form-control" id="LName" name="LName" form="EditAccountForm" style="width: 275px;">
+        <label for="Email">Email:</label>
+        <input type="text" id="Email" class="form-control" name="Email" style="width: 400px;">
         <p></p>
-        <label for="Phone">Phone: </label>
-        <input type="text" class="form-control" id="Phone" name="Phone" form="EditAccountForm" style="width: 275px;">
+        <label for="Image">Picture:</label>
+        <input type="file" id="pic" name="pic" accept="image/*">
         <p></p>
-        <label for="Email">Email: </label>
-        <input type="text" class="form-control" id="Email" name="Email" form="EditAccountForm" style="width: 275px;">
-        <p></p>
-        <label for="UserName">User Name: </label>
-        <input type="text" class="form-control" id="Username" name="Username" form="EditAccountForm" style="width: 275px;">
-        <p></p>
-        <label for="Email">Password: </label>
-        <input type="password" class="form-control" id="password" name="password" form="EditAccountForm" style="width: 275px;">
-        <p></p>
+        <label for="NMethod">Notification Method:</label>
+        <input type="radio" name="NMethod" id="radio_0" value=0> None
+        <input type="radio" name="NMethod" id="radio_1" value=1> E-mail
+        <input type="radio" name="NMethod" id="radio_2" value=2> Phone
+        <input type="radio" name="NMethod" id="radio_3" value=3> Both<br>
         <input type="submit" class="btn btn-primary btn-lg" style="width: 400px; height: 40px;" value="Submit">
-        <p></p>
-      </form>
-        <input type="submit" onclick="location.href = '../ChangePassword/index.html'" class="Change Password" value="Change Password" style="width: 275px;">
-        <p></p>
+    </form>
 </body>
+
 <script>
 function logoutHandler(){
     $.get(
@@ -71,18 +69,34 @@ function logoutHandler(){
     });
   }
 $(document).ready(function() {
-  $.get("http://localhost:3000/participant")
-      .done(function(data) {
-        document.getElementById('FName').value = data.FName;
-        document.getElementById('LName').value = data.LName;
-        document.getElementById('Phone').value = data.Phone;
-        document.getElementById('Email').value = data.Email;
-      });
-      $("#edit-user").submit(function(event) {
+    $.get("http://localhost:3000/participant")
+        .done(function(data) {
+          document.getElementById('FName').value = data.FName;
+          document.getElementById('LName').value = data.LName;
+          document.getElementById('Phone').value = data.Phone;
+          document.getElementById('Email').value = data.Email;
+
+        switch(data.NMethod) {
+          case 0:
+          $("#radio_0").prop("checked", true);
+          break;
+          case 1:
+          $("#radio_1").prop("checked", true);
+          break;
+          case 2:
+          $("#radio_2").prop("checked", true);
+          break;
+          default:
+          $("#radio_3").prop("checked", true);
+        }
+        });
+
+
+        $("#edit-participant").submit(function(event) {
             console.log("submit");
                 let formData = new FormData(this);
                 $.ajax({
-                    url:"http://localhost:3000/edit-user",
+                    url:"http://localhost:3000/edit-participant",
                     data: formData,
                     contentType: false,
                     processData: false,
@@ -95,12 +109,11 @@ $(document).ready(function() {
                     $("#edit-participant").trigger("reset");
                 })
                 .fail(function(data) {
-                    alert("Failed to edit user");
+                    alert("Failed to edit participant");
                 });
                 event.preventDefault();
                 return false;
             });
-            $("#logout").click(logoutHandler);
 });
 </script>
 </html>
