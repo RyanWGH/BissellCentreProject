@@ -33,49 +33,39 @@
     </nav>
 
     <main role="main" class="container">
-      <form id="edit-user">
+      <form id="ChangePassword">
         <p></p>
-        <label for="FName">First Name: </label>
-        <input type="text" class="form-control" id="FName" name="FName" form="EditAccountForm" style="width: 275px;">
+        <label for="CurrPassword">Current Password: </label>
+        <input type="password" class="form-control" id="old" name="old" form="ChangePassword" style="width: 275px;">
         <p></p>
-        <label for="LName">Last Name: </label>
-        <input type="text" class="form-control" id="LName" name="LName" form="EditAccountForm" style="width: 275px;">
+        <label for="NewPassword">New Password: </label>
+        <input type="password" class="form-control" id="new1" name="new1" form="ChangePassword" style="width: 275px;">
         <p></p>
-        <label for="Phone">Phone: </label>
-        <input type="text" class="form-control" id="Phone" name="Phone" form="EditAccountForm" style="width: 275px;">
+        <label for="RepeatPassword">Repeat New Password: </label>
+        <input type="password" class="form-control" id="new2" name="new2" form="ChangePassword" style="width: 275px;">
         <p></p>
-        <label for="Email">Email: </label>
-        <input type="text" class="form-control" id="Email" name="Email" form="EditAccountForm" style="width: 275px;">
-        <p></p>
-        <label for="UserName">User Name: </label>
-        <input type="text" class="form-control" id="Username" name="Username" form="EditAccountForm" style="width: 275px;">
-        <p></p>
-        <label for="Email">Password: </label>
-        <input type="password" class="form-control" id="password" name="password" form="EditAccountForm" style="width: 275px;">
-        <p></p>
-        <input type="submit" class="btn btn-primary btn-lg" style="width: 400px; height: 40px;" value="Submit">
+        <input type="submit" class="btn btn-primary btn-lg" style="width: 400px; height: 40px;" value="Change Password">
         <p></p>
       </form>
-        <input type="submit" onclick="location.href = '../ChangePassword/index.html'" class="Change Password" value="Change Password" style="width: 275px;">
-        <p></p>
+</main>
+
 </body>
 <script>
 $(document).ready(function() {
-        $("#edit-user").submit(function(event) {
-            console.log("submit");
-                let formData = new FormData(this);
-                $.ajax({
-                    url:"http://localhost:3000/edit-user",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    enctype: "multipart/form-data",
-                    type: "POST"
-                })
-                console.log(data);
+        $("#ChangePassword").submit(function(event) {
+          console.log("Testing");
+          console.log(document.getElementById("old").value);
+          console.log(document.getElementById("new1").value);
+          console.log(document.getElementById("new2").value);
+          console.log("TestingDone");
+          console.log($("#ChangePassword").serialize());
+                $.post(
+                    "http://localhost:3000/change_password",
+                    $("#ChangePassword").serialize()
+                )
                 .done(function(data) {
                     alert(`Result: ${JSON.stringify(data)}`);
-                    $("#edit-participant").trigger("reset");
+                    window.location.href = "../UserSettings/index.html";
                 })
                 .fail(function(data) {
                     alert("Failed to edit user");
@@ -83,6 +73,6 @@ $(document).ready(function() {
                 event.preventDefault();
                 return false;
             });
-});
+          });
 </script>
 </html>

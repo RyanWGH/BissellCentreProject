@@ -116,9 +116,13 @@ app.get("/logout", (req, res) => {
 
 app.post("/change_password", loggedIn, (req, res) => {
     console.log("change password");
+    console.log(req.body.new1);
+    console.log(req.body.new2);
+    console.log(req.body.old);
+    console.log(req.user.UID);
     if (checkPassword(req.body)) {
         sql.query(connectionString,
-            `UPDATE Users SET Password = '${req.body.new1}' WHERE UID = ${req.body.UID} AND Password = '${req.body.old}'`,
+            `UPDATE Users SET Password = '${req.body.new1}' WHERE UID = ${req.user.UID} AND Password = '${req.body.old}'`,
             (err, result) => {
                 if (err) {
                     console.log(1, err);
@@ -222,7 +226,112 @@ app.post("/edit-participant", loggedIn, (req, res) => {
     }
 });
 // End Participants
+// Users
+app.get("/user", loggedIn, (req, res) => {
+    console.log("getting participants");
+    sql.query(connectionString,
+        "SELECT * FROM Users",
+        (err, results) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while getting Users" });
+                return;
+            }
+            res.json(results);
+        });
+});
 
+app.put("/user", loggedIn, uploadPic.single("pic"), (req, res) => {
+    console.log("putting a new participant");
+    console.log(req.body);
+    console.log(req.file);
+    if (checkNewParticipant(req.body)) {
+        sql.query(connectionString,
+            `INSERT INTO Users VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', 0, GETDATE())`,
+            (err) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while inserting Users"});
+                    return;
+                }
+                res.json({ success: true });
+            });
+    } else {
+        res.json({ error: "Please fill the required fields."});
+    }
+});
+
+app.post("/user", loggedIn, (req, res) => {
+    console.log("get user info");
+    console.log(req.body);
+    if (checkParticipant(req.body)) {
+        sql.query(connectionString,
+            `SELECT * FROM Users WHERE PID = ${req.user.UID}`,
+            (err, results) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while getting User info" });
+                    return;
+                }
+                res.json(results);
+            });
+    } else {
+        res.json({ error: "Invalid request body" });
+    }
+});
+app.delete("/user", loggedIn, (req, res) => {
+    console.log("delete a participant");
+    sql.query(connectionString,
+        `DELETE FROM Users WHERE PID = ${req.user.UID}`,
+        (err, result) => {
+            if (err) {
+                console.log(1, err);
+                res.json({ error: "Error while deleting User" });
+                return;
+            }
+            console.log("delete User result: ", result);
+            res.json({ success: true });
+        });
+});
+
+app.post("/edit-user", loggedIn, (req, res) => {
+    console.log("get participant info");
+    console.log(req.body);
+    if (checkParticipant(req.body)) {
+        sql.query(connectionString,
+            `UPDATE Users SET Email = ${req.body.Email} AND SET FName = ${req.body.FName} AND SET LName = ${req.body.LName} AND SET Phone = ${req.body.Phone} AND SET NMethod = ${req.body.NMethod} WHERE PID = ${req.body.PID}`,
+            (err, results) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while editing User info" });
+                    return;
+                }
+                res.json(results);
+            });
+    } else {
+        res.json({ error: "Invalid request body" });
+    }
+});
+
+app.post("/edit-user-password", loggedIn, (req, res) => {
+    console.log("get User info");
+    console.log(req.body);
+    if (checkParticipant(req.body)) {
+        sql.query(connectionString,
+            `UPDATE Users SET Password = ${req.body.NPassword} WHERE UID = ${req.user.UID}`,
+            (err, results) => {
+                if (err) {
+                    console.log(1, err);
+                    res.json({ error: "Error while editing User info" });
+                    return;
+                }
+                res.json(results);
+            });
+    } else {
+        res.json({ error: "Invalid request body" });
+    }
+});
+//End Users
 // Senders
 app.post("/senders", loggedIn, (req, res) => {
     console.log("getting list of senders for participant");
@@ -542,7 +651,7 @@ function checkDonation(d) {
 }
 
 function checkPassword(p) {
-    return p.old && p.new1 == p.new2 && p.new.length >= 8;
+    return p.old && p.new1 == p.new2;
 }
 
 app.listen(port, () => {

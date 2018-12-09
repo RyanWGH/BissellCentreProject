@@ -87,8 +87,8 @@
       <li><a href="../DonationList/index.html">Donation List</a></li>
     </ul>
 	<u1 class="nav navbar-nav navbar-right">
-		<li><a href="../AccountSettings/index.html">Account Settings</a></li>
-    <li><a href="#" onclick="logoutHandler">Logout</a></li>
+		<li><a href="../UserSettings/index.html">Account Settings</a></li>
+    <li><a id="logout" href="#">Logout</a></li>
 	</u1>
   </div>
 </nav>
@@ -154,6 +154,8 @@ $(document).ready(function() {
         event.preventDefault();
         return false;
     });
+
+    $("#logout").click(logoutHandler);
   //autocomplete(document.getElementById("SenderInput"), SNameList);
 });
 
@@ -288,12 +290,13 @@ function autocomplete(inp, arr, type) {
   });
   }
   function logoutHandler(){
-    console.log("AM I BEING RUN?");
       $.get(
           "http://localhost:3000/logout",
       )
       .done(function(data) {
-          console.log("got senders");
+          if (data.success) {
+            location.href = "../LogIn/index.html";
+          }
       });
     }
 

@@ -26,7 +26,7 @@
           <li><a href="../DonationList/index.html">Donation List</a></li>
         </ul>
     	<u1 class="nav navbar-nav navbar-right">
-    		<li><a href="../AccountSettings/index.html">Account Settings</a></li>
+    		<li><a href="../UserSettings/index.html">Account Settings</a></li>
         <li><a href="http://localhost:3000/logout">Logout</a></li>
     	</u1>
       </div>
@@ -43,7 +43,7 @@
         <input type="text" id="Phone" class="form-control" name="Phone" style="width: 400px;">
         <p></p>
         <label for="Email">Email:</label>
-        <input type="text" id="Phone" class="form-control" name="Email" style="width: 400px;">
+        <input type="text" id="Email" class="form-control" name="Email" style="width: 400px;">
         <p></p>
         <label for="Image">Picture:</label>
         <input type="file" id="pic" name="pic" accept="image/*">
@@ -82,23 +82,24 @@ $(document).ready(function() {
         });
 
 
-        $("#put-participant").submit(function(event) {
+        $("#edit-participant").submit(function(event) {
             console.log("submit");
                 let formData = new FormData(this);
                 $.ajax({
-                    url:"http://localhost:3000/participant",
+                    url:"http://localhost:3000/edit-participant",
                     data: formData,
                     contentType: false,
                     processData: false,
                     enctype: "multipart/form-data",
-                    type: "PUT"
+                    type: "POST"
                 })
+                console.log(data);
                 .done(function(data) {
                     alert(`Result: ${JSON.stringify(data)}`);
-                    $("#put-participant").trigger("reset");
+                    $("#edit-participant").trigger("reset");
                 })
                 .fail(function(data) {
-                    alert("Failed to add participant");
+                    alert("Failed to edit participant");
                 });
                 event.preventDefault();
                 return false;
