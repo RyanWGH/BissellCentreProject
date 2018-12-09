@@ -14,12 +14,12 @@ const app = express();
 const port = 3000;
 
 const emailTransporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
+    host: "smtp.office365.com",
     port: 587,
     secure: false,
     auth: {
-        user: "bapvpex6epyjuz2q@ethereal.email",
-        pass: "mehNHfgKTkPAb9RHtE"
+        user: "mail-notifications@bissellcentre.org",
+        pass: "Bis!2018@"
     }
 });
 
@@ -540,11 +540,11 @@ function sendNotif(pid, sender) {
             let user = results[0];
             if (user.NMethod & 1 && user.Email) {
                 let options = {
-                    from: "\"Bissell Centre\" <notifications@bissellcentre.org>",
+                    from: "\"Bissell Centre\" <mail-notifications@bissellcentre.org>",
                     to: user.Email,
                     subject: "New mail received",
                     text: `You've received new mail from this sender: ${sender}
-                    Please pick up your mail within the next 60 days at the Bissell Centre. Our address is: blah`
+Please pick up your mail within the next 60 days at the Bissell Centre. Our address is: blah`
                 };
                 emailTransporter.sendMail(options, (err, info) => {
                     if (err) {
@@ -557,7 +557,7 @@ function sendNotif(pid, sender) {
             if (user.NMethod & 2 && user.Phone) {
                 for (let i of textAddresses) {
                     let options = {
-                        from: "\"Bissell Centre\" <notifications@bissellcentre.org>",
+                        from: "\"Bissell Centre\" <mail-notifications@bissellcentre.org>",
                         to: `${user.Phone}@${i}`,
                         subject: "New mail received",
                         text: `You've received new mail from: ${sender}. Please pick up your mail at the Bissell Centre within the next 60 days.`
