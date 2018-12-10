@@ -87,7 +87,7 @@
             <td class="searchable email">${em}</td>
             <td class="searchable company">${cmp}</td>
             <td class="searchable description">${dsc}</td>
-            <td class="searchable date">${dt}</td>
+            <td class="searchable date">${new Date(dt).toDateString()}</td>
 
             <td class="pid" style="display:none">${DonaID}</td>
             </tr>`;
@@ -110,6 +110,8 @@
                         .append(donation(i.FName, i.LName, i.Phone, i.Email, i.Company, i.Description, i.Date, i.DonationID));
                 }
             });
+
+        $("#logout").click(logoutHandler);
     });
     </script>
 </body>

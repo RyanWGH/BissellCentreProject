@@ -7,23 +7,6 @@ const sql = require("msnodesqlv8");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
 const fs = require("fs");
-//const path = require("path");
-
-/*const storePic = multer.diskStorage({
-    destination: "images/participants/",
-    filename(req, file, cb) {
-        cb(null, `${req.body.pid}${path.extname(file.originalname)}`);
-    }
-});
-const storeSig = multer.diskStorage({
-    destination: "images/signatures",
-    filename(req, file, cb) {
-        cb(null, `${req.body.mid}${path.extname(file.originalname)}`);
-    }
-});
-const uploadSig = multer({ storage: storeSig });
-const uploadPic = multer({ storage: storePic });*/
-
 const uploadSig = multer({ dest: "images/signatures" });
 const uploadPic = multer({ dest: "images/participants" });
 
@@ -39,6 +22,8 @@ const emailTransporter = nodemailer.createTransport({
         pass: "Bis!2018@"
     }
 });
+
+const DIRECTOR_EMAIL = "ohoule5@gmail.com";
 
 const connectionString = "Driver={SQL Server Native Client 11.0};Server=localhost;Database=BisselCentre;Trusted_Connection=yes";
 
@@ -502,6 +487,7 @@ app.put("/donation", loggedIn, (req, res) => {
                     res.json({ error: "Error while inserting a new donation" });
                     return;
                 }
+                sendDonationNotif(req.body);
                 res.json({ success: true });
             });
     } else {
@@ -582,6 +568,26 @@ Please pick up your mail within the next 60 days at the Bissell Centre. Our addr
                     });
             }
         });
+}
+
+function sendDonationNotif(donation) {
+    let options = {
+        from: "\"Bissell Centre\" <mail-notifications@bissellcentre.org>",
+        to: DIRECTOR_EMAIL,
+        subject: "New Donation Received!",
+        text: `A new donation was just donated! Here is their info:
+
+Name: ${donation.FName ? `${donation.FName} ${donation.LName}` : "Anonymous donor"}
+${donation.Company ? `Company: ${donation.Company}\n` : ""}Description of donation: ${donation.Description}
+${donation.Phone ? `Phone: ${donation.Phone}\n` : ""}${donation.Email ? `Email: ${donation.Email}` : ""}`
+    };
+
+    emailTransporter.sendMail(options, (err, info) => {
+        if (err) {
+            return console.log(1, err);
+        }
+        console.log(info);
+    });
 }
 
 function loggedIn(req, res, next) {
