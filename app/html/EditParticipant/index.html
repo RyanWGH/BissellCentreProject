@@ -26,8 +26,8 @@
           <li><a href="../DonationList/index.html">Donation List</a></li>
         </ul>
     	<u1 class="nav navbar-nav navbar-right">
-    		<li><a href="../UserSettings/index.html">Account Settings</a></li>
-        <li><a href="http://localhost:3000/logout">Logout</a></li>
+        <li><a href="../ChangePassword/index.html">Settings</a></li>
+        <li><a id="logout" href="#">Logout</a></li>
     	</u1>
       </div>
     </nav>
@@ -58,6 +58,16 @@
 </body>
 
 <script>
+function logoutHandler(){
+    $.get(
+        "http://localhost:3000/logout",
+    )
+    .done(function(data) {
+        if (data.success) {
+          location.href = "../LogIn/index.html";
+        }
+    });
+  }
 $(document).ready(function() {
     $.get("http://localhost:3000/participant")
         .done(function(data) {
