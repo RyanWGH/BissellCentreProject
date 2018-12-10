@@ -209,7 +209,7 @@ app.post("/participant", loggedIn, (req, res) => {
     }
 });
 
-app.delete("/participant", loggedIn, (req, res) => {
+app.delete("/participant", loggedIn, isAdmin, (req, res) => {
     console.log("delete a participant");
     sql.query(connectionString,
         `DELETE FROM Participant WHERE PID = ${req.body.PID}`,
@@ -296,8 +296,9 @@ app.post("/user", loggedIn, (req, res) => {
         res.json({ error: "Invalid request body" });
     }
 });
-app.delete("/user", loggedIn, (req, res) => {
-    console.log("delete a participant");
+
+app.delete("/user", loggedIn, isAdmin, (req, res) => {
+    console.log("delete a user");
     sql.query(connectionString,
         `DELETE FROM Users WHERE UID = ${req.user.UID}`,
         (err, result) => {
@@ -350,7 +351,7 @@ app.post("/senders", loggedIn, (req, res) => {
 app.get("/outstanding_mail", loggedIn, (req, res) => {
     console.log("getting outstanding mail");
     sql.query(connectionString,
-        "SELECT * FROM Mail, Participant WHERE Mail.PID = Participant.PID AND DATEDIFF(day, Date, GETDATE()) >= 60 AND Status = 0",
+        "SELECT * FROM Mail, Participant WHERE Mail.PID = Participant.PID AND DATEDIFF(day, Date, GETDATE()) >= 60 AND Status <= 1",
         (err, results) => {
             if (err) {
                 console.log(1, err);
@@ -444,7 +445,7 @@ app.put("/mail", loggedIn, (req, res) => {
     }
 });
 
-app.delete("/mail", loggedIn, (req, res) => {
+app.delete("/mail", loggedIn, isAdmin, (req, res) => {
     console.log("delete a mail");
     sql.query(connectionString,
         `DELETE FROM Mail WHERE MID = ${req.body.MID}`,
@@ -510,7 +511,7 @@ app.put("/donation", loggedIn, (req, res) => {
     }
 });
 
-app.delete("/donation", loggedIn, (req, res) => {
+app.delete("/donation", loggedIn, isAdmin, (req, res) => {
     console.log("delete a donation");
     sql.query(connectionString,
         `DELETE FROM Donation WHERE DonationID = ${req.body.DonationID}`,
@@ -592,6 +593,15 @@ function loggedIn(req, res, next) {
     } else {
         console.log("not logged in");
         res.json({ error: "Not logged in" });
+    }
+}
+
+function isAdmin(req, res, next) {
+    if (req.user.admin) {
+        next();
+    } else {
+        console.log("not an admin");
+        res.json({ error: "Not an admin" });
     }
 }
 
