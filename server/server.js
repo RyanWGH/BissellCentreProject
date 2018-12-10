@@ -6,9 +6,26 @@ const session = require("express-session");
 const sql = require("msnodesqlv8");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
-const uploadSig = multer({ dest: "images/signatures/" });
-const uploadPic = multer({ dest: "images/participants/" });
-//const crypto = require("crypto");
+const fs = require("fs");
+//const path = require("path");
+
+/*const storePic = multer.diskStorage({
+    destination: "images/participants/",
+    filename(req, file, cb) {
+        cb(null, `${req.body.pid}${path.extname(file.originalname)}`);
+    }
+});
+const storeSig = multer.diskStorage({
+    destination: "images/signatures",
+    filename(req, file, cb) {
+        cb(null, `${req.body.mid}${path.extname(file.originalname)}`);
+    }
+});
+const uploadSig = multer({ storage: storeSig });
+const uploadPic = multer({ storage: storePic });*/
+
+const uploadSig = multer({ dest: "images/signatures" });
+const uploadPic = multer({ dest: "images/participants" });
 
 const app = express();
 const port = 3000;
@@ -157,9 +174,9 @@ app.put("/participant", loggedIn, uploadPic.single("pic"), (req, res) => {
     console.log("putting a new participant");
     console.log(req.body);
     console.log(req.file);
-    if (checkNewParticipant(req.body)) {
+    if (checkNewParticipant(req.body, req.file)) {
         sql.query(connectionString,
-            `INSERT INTO Participant VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}',null, '${req.body.Phone}', '${req.body.NMethod}', GETDATE())`,
+            `INSERT INTO Participant VALUES('${req.body.Email}', '${req.body.FName}', '${req.body.LName}', '${req.file.filename}', '${req.body.Phone}', '${req.body.NMethod}', GETDATE())`,
             (err) => {
                 if (err) {
                     console.log(1, err);
@@ -245,7 +262,7 @@ app.put("/user", loggedIn, uploadPic.single("pic"), (req, res) => {
     console.log("putting a new participant");
     console.log(req.body);
     console.log(req.file);
-    if (checkNewParticipant(req.body)) {
+    if (checkNewParticipant(req.body, req.file)) {
         sql.query(connectionString,
             `INSERT INTO Users VALUES('${req.body.FName}', '${req.body.LName}', '${req.body.Phone}', '${req.body.Email}', '${req.body.Password}'`,
             (err) => {
@@ -361,13 +378,14 @@ app.post("/outstanding_mail", loggedIn, (req, res) => {
 // End Outstanding Mail
 
 // Pick up
-app.post("/pickup", loggedIn, (req, res) => {
+app.post("/pickup", loggedIn, uploadSig.single("sig"), (req, res) => {
     console.log("setting mail status to picked up");
     sql.query(connectionString,
-        `UPDATE Mail SET Status = 2, PickUpDate = GETDATE(), Signature = 'Signature.png' WHERE MID = ${req.body.MID}`,
+        `UPDATE Mail SET Status = 2, PickUpDate = GETDATE(), Signature = '${req.file.filename}', UserPickUp = ${req.user.UID} WHERE MID = ${req.body.MID}`,
         (err, result) => {
             if (err) {
                 console.log(1, err);
+                fs.unlink(req.file.path);
                 res.json({ error: "Error while setting pickup status for mail" });
                 return;
             }
@@ -411,7 +429,7 @@ app.put("/mail", loggedIn, (req, res) => {
     console.log(req.body);
     if (checkMail(req.body)) {
         sql.query(connectionString,
-            `INSERT INTO Mail VALUES(${req.body.PID}, '${req.body.SenderName}', GETDATE(), 0, null, null, null)`,
+            `INSERT INTO Mail VALUES(${req.body.PID}, '${req.body.SenderName}', GETDATE(), 0, null, null, null, ${req.user.UID}, null)`,
             (err) => {
                 if (err) {
                     console.log(1, err);
@@ -517,23 +535,26 @@ function sendNotif(pid, sender) {
                 return console.log(2, err);
             }
             let user = results[0];
+            let notif = false;
             if (user.NMethod & 1 && user.Email) {
+                notif = true;
                 let options = {
                     from: "\"Bissell Centre\" <mail-notifications@bissellcentre.org>",
                     to: user.Email,
                     subject: "New mail received",
                     text: `You've received new mail from this sender: ${sender}
-Please pick up your mail within the next 60 days at the Bissell Centre. Our address is: blah`
+Please pick up your mail within the next 60 days at the Bissell Centre. Our address is:
+10527 96 St, Edmonton, AB T5H 2H6`
                 };
                 emailTransporter.sendMail(options, (err, info) => {
                     if (err) {
-                        console.log(3, err);
-                        return;
+                        return console.log(3, err);
                     }
                     console.log(info);
                 });
             }
             if (user.NMethod & 2 && user.Phone) {
+                notif = true;
                 for (let i of textAddresses) {
                     let options = {
                         from: "\"Bissell Centre\" <mail-notifications@bissellcentre.org>",
@@ -543,64 +564,24 @@ Please pick up your mail within the next 60 days at the Bissell Centre. Our addr
                     };
                     emailTransporter.sendMail(options, (err, info) => {
                         if (err) {
-                            console.log(4, err);
-                            return;
+                            return console.log(4, err);
                         }
                         console.log(i, info);
                     });
                 }
+            }
+            if (notif) {
+                sql.query(connectionString,
+                    `UPDATE Mail SET Status = 1 WHERE Status = 0 AND PID = ${pid}`,
+                    (err) => {
+                        if (err) {
+                            return console.log(5, err);
+                        }
+                        console.log("updated mails to notification sent");
+                    });
             }
         });
 }
-
-/*function sendNotif(pid, sender) {
-    sql.query(connectionString,
-        `SELECT * FROM Participant WHERE PID = ${pid}`,
-        (err, results) => {
-            if (err) {
-                console.log(1, err);
-                return;
-            }
-            if (!results.length) {
-                console.log(2, err);
-                return;
-            }
-            let user = results[0];
-            if (user.NMethod & 1 && user.Email) {
-                let options = {
-                    from: "\"Bissell Centre\" <notifications@bissellcentre.org>",
-                    to: user.Email,
-                    subject: "New mail received",
-                    text: `You've received new mail from this sender: ${sender}
-                    Please pick up your mail within the next 60 days at the Bissell Centre. Our address is: blah`
-                };
-                emailTransporter.sendMail(options, (err, info) => {
-                    if (err) {
-                        console.log(3, err);
-                        return;
-                    }
-                    console.log(info);
-                });
-            }
-            if (user.NMethod & 2 && user.Phone) {
-                for (let i of textAddresses) {
-                    let options = {
-                        from: "\"Bissell Centre\" <notifications@bissellcentre.org>",
-                        to: `user.Phone@${i}`,
-                        subject: "New mail received",
-                        text: `You've received new mail from: ${sender}. Please pick up your mail at the Bissell Centre within the next 60 days.`
-                    };
-                    emailTransporter.sendMail(options, (err, info) => {
-                        if (err) {
-                            console.log(4, err);
-                            return;
-                        }
-                        console.log(i, info);
-                    });
-                }
-            }
-        });
-}*/
 
 function loggedIn(req, res, next) {
     console.log(req.user);
@@ -612,9 +593,9 @@ function loggedIn(req, res, next) {
     }
 }
 
-function checkNewParticipant(p) {
+function checkNewParticipant(p, f) {
     // later add picture check
-    return p.FName && p.LName;
+    return p.FName && p.LName && f;
 }
 
 function checkMail(m) {

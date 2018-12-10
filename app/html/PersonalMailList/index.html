@@ -81,13 +81,19 @@
   function personalmail(m) {
       let tr = `<tr>
       <td class="searchable SenderName">${m.SenderName}</td>
-      <td class="searchable DateReceived">${new Date(m.Date).toDateString()}</td>
-      <td class="searchable Signature">N/A</td>`;
-      if (!m.PickUpDate) {
-          tr += `<td class="mid" style="display:none">${m.MID}</td>
-          <td><button class="btn btn-primary pickup">Pick Up</button></td>`
+      <td class="searchable DateReceived">${new Date(m.Date).toDateString()}</td>`;
+
+      if (m.PickUpDate) {
+          tr += `<td><img class="mb-4" src="../../../images/signatures/${m.Signature}" alt="" style="max-width: 100px; max-height: 100px" align="centre"></img></td>
+          <td class="searchable PickUpDate">${new Date(m.PickUpDate).toDateString()}</td>`;
+      } else if (m.SendBackDate) {
+          tr += `<td class="Signature">N/A</td>
+          <td class="searchable SendBackDate">Sent back: ${new Date(m.SendBackDate).toDateString()}</td>`;
       } else {
-          tr += `<td class="searchable PickUpDate">${new Date(m.PickUpDate).toDateString()}</td>`
+          tr += `<td class="Signature">N/A</td>
+          <td class="mid" style="display:none">${m.MID}</td>
+          <td><button class="btn btn-primary pickup">Pick Up</button></td>
+          <td style="display:none"><input type="file" class="sigupload" accept="image/*" /></td>`;
       }
       tr += "</tr>";
       return tr;
@@ -114,23 +120,40 @@
               $("#PersonalTable")
                 .append(personalmail(i));
           }
-          $(".pickup").click(function() {
+
+          $(".sigupload").on("click touchstart" , function(){
+              $(this).val("");
+          });
+
+          $(".sigupload").change(function() {
               let MID = $(this).parent().parent().find(".mid").text();
-              $.post(
-                  "http://localhost:3000/pickup",
-                  { MID }
-              )
+              console.log(MID);
+              let formData = new FormData();
+              formData.append("sig", this.files[0]);
+              formData.append("MID", MID);
+              $.ajax({
+                  url:"http://localhost:3000/pickup",
+                  data: formData,
+                  contentType: false,
+                  processData: false,
+                  enctype: "multipart/form-data",
+                  type: "POST"
+              })
               .done(function(data) {
-                  alert("Mail marked as picked up");
+                  alert(`Message: ${JSON.stringify(data)}`);
                   location.reload();
               })
               .fail(function(data) {
                   console.log(data);
               });
           });
-      });
-      $("#logout").click(logoutHandler);
 
+          $(".pickup").click(function() {
+              $(this).parent().parent().find(".sigupload").trigger("click");
+          });
+      });
+
+      $("#logout").click(logoutHandler);
   });
 
 </script>
