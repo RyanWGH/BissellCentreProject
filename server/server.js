@@ -212,7 +212,7 @@ app.post("/edit-participant", loggedIn, (req, res) => {
     console.log(req.body);
     if (checkParticipant(req.body)) {
         sql.query(connectionString,
-            `UPDATE Participant SET Email = ${req.body.Email} AND SET FName = ${req.body.FName} AND SET LName = ${req.body.LName} AND SET Phone = ${req.body.Phone} AND SET NMethod = ${req.body.NMethod} WHERE PID = ${req.body.PID}`,
+            `UPDATE Participant SET Email = '${req.body.Email}', FName = '${req.body.FName}', LName = '${req.body.LName}', Phone = ${req.body.Phone}, NMethod = ${req.body.NMethod} WHERE PID = ${req.body.PID}`,
             (err, results) => {
                 if (err) {
                     console.log(1, err);
@@ -446,7 +446,7 @@ app.delete("/mail", loggedIn, (req, res) => {
 app.get("/donation", loggedIn, (req, res) => {
     console.log("getting all mail");
     sql.query(connectionString,
-        "SELECT * FROM Donation, Donor, DonationItem WHERE Donation.DID = DonationItem.DID AND Donation.DonorID = Donor.DonorID",
+        "SELECT * FROM Donation",
         (err, results) => {
             if (err) {
                 console.log(1, err);
@@ -460,7 +460,7 @@ app.get("/donation", loggedIn, (req, res) => {
 app.post("/donation", loggedIn, (req, res) => {
     console.log("getting donation information from a certain donor");
     sql.query(connectionString,
-        `SELECT * FROM Donation WHERE DonorID = ${req.body.DonorID}`,
+        `SELECT * FROM Donation WHERE DonationID = ${req.body.DonationID}`,
         (err, results) => {
             if (err) {
                 console.log(1, err);
@@ -476,9 +476,7 @@ app.put("/donation", loggedIn, (req, res) => {
     console.log(req.body);
     if (checkDonation(req.body)) {
         sql.query(connectionString,
-            `INSERT INTO Donor VALUES(${req.body.Email}, '${req.body.Phone}','${req.body.FName}','${req.body.LName}', '${req.body.Company}', GETDATE());
-            INSERT INTO DonationItem VALUES ('${req.body.Description}', GETDATE(), ${req.body.DonorID});
-            INSERT INTO Donation VALUES (${req.body.DID}, ${req.body.DonorID}, GETDATE())`,
+            `INSERT INTO Donation VALUES(GETDATE(), '${req.body.FName}','${req.body.LName}','${req.body.Email}','${req.body.Phone}', '${req.body.Company}', '${req.body.Description}')`,
             (err) => {
                 if (err) {
                     console.log(1, err);
@@ -628,7 +626,7 @@ function checkParticipant(p) {
     return p.PID;
 }
 function checkDonation(d) {
-    return d.DID && d.DonorID;
+    return d.Description;
 }
 
 function checkPassword(p) {
