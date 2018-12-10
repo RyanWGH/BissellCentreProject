@@ -125,6 +125,7 @@ function convertArrayOfObjectsToCSV(args){
 }
 function downloadCSV(args) {
         var data, filename, link;
+
         var csv = convertArrayOfObjectsToCSV({
             data: statData
         });
@@ -152,6 +153,17 @@ function logoutHandler(){
         }
     });
   }
+
+  $(document).ready(function() {
+  $.get(
+    "http://localhost:3000/get_stats",
+  )
+  .done(function(data) {
+      for (var i = 0; i < data.length; i++) {
+          statData[i].Value = data[i].Column0;
+      }
+  });
+});
 
 
 </script>
