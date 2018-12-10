@@ -101,21 +101,29 @@ $(document).ready(function() {
 
         $("#edit-participant").submit(function(event) {
             console.log("submit");
-            console.log($("#edit-participant").serialize());
-                $.post(
-                    "http://localhost:3000/edit-participant",
-                    $("#edit-participant").serialize()
-                )
-                .done(function(data) {
+            let formData = new FormData(this);
+            $.ajax({
+                url:"http://localhost:3000/edit-participant",
+                data: formData,
+                contentType: false,
+                processData: false,
+                enctype: "multipart/form-data",
+                type: "POST"
+            })
+            .done(function(data) {
+                if (data.error) {
                     alert(`Result: ${JSON.stringify(data)}`);
-                    $("#edit-participant").trigger("reset");
-                })
-                .fail(function(data) {
-                    alert("Failed to edit participant");
-                });
-                event.preventDefault();
-                return false;
+                } else {
+                    alert("Successfully edited participant!");
+                    window.location.href = "../PersonalMailList/index.html";
+                }
+            })
+            .fail(function(data) {
+                alert("Failed to edit participant");
             });
+            event.preventDefault();
+            return false;
+        });
 
         $("#logout").click(logoutHandler);
 });

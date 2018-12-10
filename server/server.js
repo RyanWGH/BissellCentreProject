@@ -6,7 +6,6 @@ const session = require("express-session");
 const sql = require("msnodesqlv8");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
-const fs = require("fs");
 const uploadSig = multer({ dest: "images/signatures" });
 const uploadPic = multer({ dest: "images/participants" });
 const Async = require("async");
@@ -231,12 +230,13 @@ app.delete("/participant", loggedIn, isAdmin, (req, res) => {
         });
 });
 
-app.post("/edit-participant", loggedIn, (req, res) => {
+app.post("/edit-participant", loggedIn, uploadPic.single("pic"), (req, res) => {
     console.log("get participant info");
     console.log(req.body);
+    console.log(req.file);
     if (checkParticipant(req.body)) {
         sql.query(connectionString,
-            `UPDATE Participant SET Email = '${req.body.Email}', FName = '${req.body.FName}', LName = '${req.body.LName}', Phone = ${req.body.Phone}, NMethod = ${req.body.NMethod} WHERE PID = ${req.body.PID}`,
+            `UPDATE Participant SET ${req.file ? `PImage = '${req.file.filename}',` : ""} Email = '${req.body.Email}', FName = '${req.body.FName}', LName = '${req.body.LName}', Phone = '${req.body.Phone}', NMethod = ${req.body.NMethod} WHERE PID = ${req.body.PID}`,
             (err, results) => {
                 if (err) {
                     console.log(1, err);
@@ -393,7 +393,6 @@ app.post("/pickup", loggedIn, uploadSig.single("sig"), (req, res) => {
         (err, result) => {
             if (err) {
                 console.log(1, err);
-                fs.unlink(req.file.path);
                 res.json({ error: "Error while setting pickup status for mail" });
                 return;
             }

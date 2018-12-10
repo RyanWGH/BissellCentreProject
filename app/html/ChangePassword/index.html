@@ -75,11 +75,15 @@ $(document).ready(function() {
                     $("#ChangePassword").serialize()
                 )
                 .done(function(data) {
-                    alert(`Result: ${JSON.stringify(data)}`);
-                    window.location.href = "../ParticipantsList/index.html";
+                    if (data.error) {
+                        alert(`Result: ${JSON.stringify(data)}`);
+                    } else {
+                        alert("Successfully changed password!");
+                        window.location.href = "../ParticipantsList/index.html";
+                    }
                 })
                 .fail(function(data) {
-                    alert("Failed to edit user");
+                    alert("Failed to change password");
                 });
                 event.preventDefault();
                 return false;

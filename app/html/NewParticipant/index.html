@@ -81,8 +81,12 @@ $(document).ready(function() {
             type: "PUT"
         })
         .done(function(data) {
-            alert(`Result: ${JSON.stringify(data)}`);
-            $("#put-participant").trigger("reset");
+            if (data.error) {
+                alert(`Result: ${JSON.stringify(data)}`);
+            } else {
+                alert("Successfully added a new participant!");
+                $("#put-participant").trigger("reset");
+            }
         })
         .fail(function(data) {
             alert("Failed to add participant");

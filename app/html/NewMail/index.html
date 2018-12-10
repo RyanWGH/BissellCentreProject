@@ -140,14 +140,13 @@ $(document).ready(function() {
             type: "PUT"
         })
         .done(function(data) {
-            console.log(data);
             if (data.error) {
-                alert("Failed to add new mail");
-                return;
+                alert(`Result: ${JSON.stringify(data)}`);
+            } else {
+                alert("Successfully added new mail!");
+                $("#put-mail").trigger("reset");
+                currentParValue = null;
             }
-            alert("Successfully added a new mail!");
-            $("#put-mail").trigger("reset");
-            currentParValue = null;
         })
         .fail(function(data) {
             alert("Failed to add mail");

@@ -75,9 +75,12 @@ $(document).ready(function() {
             type: "PUT"
         })
         .done(function(data) {
-          console.log(data);
-            alert("Successfully added a new donation!");
-            $("#put-donation").trigger("reset");
+            if (data.error) {
+                alert(`Result: ${JSON.stringify(data)}`);
+            } else {
+                alert("Successfully added a new donation!");
+                $("#put-donation").trigger("reset");
+            }
         })
         .fail(function(data) {
             alert("Failed to add donation");

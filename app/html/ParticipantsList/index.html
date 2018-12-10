@@ -102,6 +102,9 @@
     $(document).ready(function() {
         $.get("http://localhost:3000/participant")
             .done(function(data) {
+                if (data.error) {
+                    return console.log(data);
+                }
                 for (let i of data) {
                     $("#ParticipantsTables")
                         .append(participant(i.FName, i.LName, i.PImage, i.Phone, i.Email, i.PID));

@@ -136,8 +136,12 @@ function logoutHandler(){
                     type: "POST"
                 })
                 .done(function(data) {
-                    alert(`Message: ${JSON.stringify(data)}`);
-                    location.reload();
+                    if (data.error) {
+                        alert(`Result: ${JSON.stringify(data)}`);
+                    } else {
+                        alert("Mail marked as picked up!");
+                        location.reload();
+                    }
                 })
                 .fail(function(data) {
                     console.log(data);

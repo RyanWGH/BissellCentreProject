@@ -81,8 +81,12 @@ $(document).ready(function() {
                 { MID }
             )
             .done(function(data) {
-                alert("Mail marked as returned");
-                location.reload();
+                if (data.error) {
+                    alert(`Result: ${JSON.stringify(data)}`);
+                } else {
+                    alert("Mail marked as returned");
+                    location.reload();
+                }
             })
             .fail(function(data) {
                 console.log(data);
