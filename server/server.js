@@ -7,6 +7,7 @@ const sql = require("msnodesqlv8");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
 const fs = require("fs");
+const Async = require("async");
 //const path = require("path");
 
 /*const storePic = multer.diskStorage({
@@ -55,6 +56,27 @@ const textAddresses = [
     "txt.eastlink.ca",
     "mobiletxt.ca",
     "sms.sasktel.com"
+];
+
+const statqueries = [
+    "SELECT COUNT(PID) FROM Participant;",
+    "SELECT COUNT(PID) FROM Participant WHERE MONTH(DateCreated) = 11 AND YEAR(DateCreated) = 2018;",
+    "SELECT COUNT(PID) FROM Participant WHERE YEAR(DateCreated) = 2018;",
+    "SELECT COUNT(PID) FROM Participant WHERE NMethod = 1;",
+    "SELECT COUNT(PID) FROM Participant WHERE NMethod = 2;",
+    "SELECT COUNT(PID) FROM Participant WHERE NMethod = 3;",
+    "SELECT COUNT(PID) FROM Participant WHERE NMethod = 0;",
+    "SELECT COUNT(MID) FROM Mail;",
+    "SELECT COUNT(MID) FROM Mail WHERE MONTH(Date) = 11 AND YEAR(Date) = 2018;",
+    "SELECT COUNT(MID) FROM Mail WHERE YEAR(Date) = 2018;",
+    "SELECT COUNT(MID) FROM Mail WHERE SendBackDate IS NOT NULL;",
+    "SELECT COUNT(MID) FROM Mail WHERE MONTH(SendBackDate) = 11;",
+    "SELECT COUNT(MID) FROM Mail WHERE PickUpDate IS NOT NULL;",
+    "SELECT COUNT(MID) FROM Mail WHERE MONTH(PickUpDate) = 11;",
+    "SELECT AVG(DATEDIFF(day, Date, PickUpDate)) FROM Mail WHERE PickUpDate IS NOT NULL;",
+    "SELECT COUNT(DonationID) FROM Donation;",
+    "SELECT COUNT(DonationID) FROM Donation WHERE MONTH(Date) = 11 AND YEAR(Date) = 2018;",
+    "SELECT COUNT(DonationID) FROM Donation WHERE YEAR(Date) = 2018;"
 ];
 
 app.use(express.static("public"));
@@ -524,6 +546,26 @@ app.delete("/donation", loggedIn, isAdmin, (req, res) => {
         });
 });
 // End Donation
+app.get("/get_stats", loggedIn, (req, res) => {
+    console.log("getting stats");
+    Async.concat(statqueries, function(query, cb) {
+        sql.query(connectionString, query, (err, results) => {
+            if (err) {
+                console.log(1, err);
+                return cb(err);
+            }
+            cb(null, results[0]);
+        });
+    }, function(err, result) {
+        if (err) {
+            console.log(2, err);
+            res.json({ error: "Error while getting stats" });
+            return;
+        }
+        console.log(result);
+        res.json(result);
+    });
+});
 
 function sendNotif(pid, sender) {
     sql.query(connectionString,
