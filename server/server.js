@@ -6,6 +6,7 @@ const session = require("express-session");
 const sql = require("msnodesqlv8");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
+const fs = require("fs");
 //const path = require("path");
 
 /*const storePic = multer.diskStorage({
@@ -380,10 +381,11 @@ app.post("/outstanding_mail", loggedIn, (req, res) => {
 app.post("/pickup", loggedIn, uploadSig.single("sig"), (req, res) => {
     console.log("setting mail status to picked up");
     sql.query(connectionString,
-        `UPDATE Mail SET Status = 2, PickUpDate = GETDATE(), Signature = 'Signature.png' WHERE MID = ${req.body.MID}`,
+        `UPDATE Mail SET Status = 2, PickUpDate = GETDATE(), Signature = '${req.file.filename}', UserPickUp = ${req.user.UID} WHERE MID = ${req.body.MID}`,
         (err, result) => {
             if (err) {
                 console.log(1, err);
+                fs.unlink(req.file.path);
                 res.json({ error: "Error while setting pickup status for mail" });
                 return;
             }
@@ -427,7 +429,7 @@ app.put("/mail", loggedIn, (req, res) => {
     console.log(req.body);
     if (checkMail(req.body)) {
         sql.query(connectionString,
-            `INSERT INTO Mail VALUES(${req.body.PID}, '${req.body.SenderName}', GETDATE(), 0, null, null, null)`,
+            `INSERT INTO Mail VALUES(${req.body.PID}, '${req.body.SenderName}', GETDATE(), 0, null, null, null, ${req.user.UID}, null)`,
             (err) => {
                 if (err) {
                     console.log(1, err);
