@@ -35,7 +35,7 @@
 </nav>
 
 <main role="main" class="container">
-<form id="put-donation">
+<form id="put-user">
     <label for="FirstName">First Name:</label>
     <input type="text" class="form-control" name="FName" style="width: 400px;">
     <label for="LastName">Last Name:</label>
@@ -47,12 +47,12 @@
     <label for="Email">Email:</label>
     <input type="text" class="form-control" name="Email" style="width: 400px;">
     <p></p>
-    <label for="Company">Company Name:</label>
-    <input type="text" class="form-control" name="Company" style="width: 400px;">
+    <label for="Password">Password:</label>
+    <input type="Password" class="form-control" name="Password" style="width: 400px;">
     <p></p>
-    <label for="Description">Description:</label>
-    <input type="text" class="form-control" name="Description" style="width: 400px;">
-    <p></p>
+    <label for="Admin">Admin:</label>
+    <input type="radio" name="Admin" value=1> Yes
+    <input type="radio" name="Admin" value=0> No<br>
     <input type="submit" class="btn btn-primary btn-lg" style="width: 400px; height: 40px;" value="Submit">
 </form>
 
@@ -68,26 +68,25 @@ function logoutHandler(){
     });
   }
 $(document).ready(function() {
-    $("#put-donation").submit(function(event) {
+    $("#put-user").submit(function(event) {
         console.log("submit");
         $.ajax({
-            url:"http://localhost:3000/donation",
-            data: $("#put-donation").serialize(),
+            url:"http://localhost:3000/user",
+            data: $("#put-user").serialize(),
             type: "PUT"
         })
         .done(function(data) {
-          console.log(data);
-            alert("Successfully added a new donation!");
-            $("#put-donation").trigger("reset");
+            alert(`Result: ${JSON.stringify(data)}`);
+            $("#put-user").trigger("reset");
         })
         .fail(function(data) {
-            alert("Failed to add donation");
+            alert("Failed to add user");
         });
         event.preventDefault();
         return false;
     });
-
     $("#logout").click(logoutHandler);
+
 });
 </script>
 
