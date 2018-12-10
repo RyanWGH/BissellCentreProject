@@ -46,7 +46,7 @@
         <th>Sender</th>
         <th>Received</th>
         <th>Signature</th>
-        <th>Picked Up</th>
+        <th>Status</th>
     </tr>
 </table>
 
@@ -96,7 +96,7 @@ function logoutHandler(){
       <td class="searchable DateReceived">${new Date(m.Date).toDateString()}</td>`;
       if (m.PickUpDate) {
           tr += `<td class="searchable Signature"><img class="mb-4" src="../../../images/signatures/${m.Signature}" alt="" style="max-width: 100px; max-height: 100px" align="centre"></img></td>
-          <td class="searchable PickUpDate">Picked up: ${new Date(m.PickUpDate).toDateString()}</td>`;
+          <td class="searchable PickUpDate">Picked up: ${new Date(m.PickUpDate).toDateString()}<br>Handled by: ${m.UserFName} ${m.UserLName}</td>`;
       } else if (m.SendBackDate) {
           tr += `<td class="searchable Signature">N/A</td>
           <td class="searchable SendBackDate">Sent back: ${new Date(m.SendBackDate).toDateString()}</td>`;

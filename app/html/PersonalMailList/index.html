@@ -44,7 +44,7 @@
     <th>Sender Name</th>
     <th>Date Received</th>
     <th>Signature</th>
-    <th>Picked Up</th>
+    <th>Status</th>
   </tr>
 </table>
 
@@ -85,7 +85,7 @@
 
       if (m.PickUpDate) {
           tr += `<td><img class="mb-4" src="../../../images/signatures/${m.Signature}" alt="" style="max-width: 100px; max-height: 100px" align="centre"></img></td>
-          <td class="searchable PickUpDate">${new Date(m.PickUpDate).toDateString()}</td>`;
+          <td class="searchable PickUpDate">Picked up: ${new Date(m.PickUpDate).toDateString()}<br>Handled by: ${m.UserFName} ${m.UserLName}</td>`;
       } else if (m.SendBackDate) {
           tr += `<td class="Signature">N/A</td>
           <td class="searchable SendBackDate">Sent back: ${new Date(m.SendBackDate).toDateString()}</td>`;

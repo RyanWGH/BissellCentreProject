@@ -385,7 +385,7 @@ app.post("/pickup", loggedIn, uploadSig.single("sig"), (req, res) => {
 app.get("/mail", loggedIn, (req, res) => {
     console.log("getting all mail");
     sql.query(connectionString,
-        "SELECT * FROM Mail, Participant WHERE Mail.PID = Participant.PID  ORDER BY Status ASC",
+        "SELECT Participant.PImage, Participant.FName, Participant.LName, Participant.PID, Mail.SenderName, Mail.MID, Mail.Date, Mail.Signature, Mail.PickUpDate, Mail.SendBackDate, Users.FName AS UserFName, Users.LName AS UserLName, Users.UID FROM Mail, Participant, Users WHERE Mail.PID = Participant.PID AND ((Users.UID = Mail.UserPickUp) OR Mail.UserPickUp IS NULL) ORDER BY Status ASC",
         (err, results) => {
             if (err) {
                 console.log(1, err);
@@ -399,7 +399,7 @@ app.get("/mail", loggedIn, (req, res) => {
 app.post("/mail", loggedIn, (req, res) => {
     console.log("getting mail for certain participant");
     sql.query(connectionString,
-        `SELECT * FROM Mail WHERE PID = ${req.body.PID} ORDER BY Status ASC`,
+        `SELECT Participant.PImage, Participant.FName, Participant.LName, Participant.PID, Mail.SenderName, Mail.MID, Mail.Date, Mail.Signature, Mail.PickUpDate, Mail.SendBackDate, Users.FName AS UserFName, Users.LName AS UserLName, Users.UID FROM Mail, Participant, Users WHERE Mail.PID = Participant.PID AND ((Users.UID = Mail.UserPickUp) OR Mail.UserPickUp IS NULL) AND Participant.PID = ${req.body.PID} ORDER BY Status ASC`,
         (err, results) => {
             if (err) {
                 console.log(1, err);
