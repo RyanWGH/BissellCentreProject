@@ -81,14 +81,18 @@
       let tr = `<tr>
       <td class="searchable SenderName">${m.SenderName}</td>
       <td class="searchable DateReceived">${new Date(m.Date).toDateString()}</td>`;
-      if (!m.PickUpDate) {
+
+      if (m.PickUpDate) {
+          tr += `<td><img class="mb-4" src="../../../images/signatures/${m.Signature}" alt="" style="max-width: 100px; max-height: 100px" align="centre"></img></td>
+          <td class="searchable PickUpDate">${new Date(m.PickUpDate).toDateString()}</td>`;
+      } else if (m.SendBackDate) {
+          tr += `<td class="Signature">N/A</td>
+          <td class="searchable SendBackDate">Sent back: ${new Date(m.SendBackDate).toDateString()}</td>`;
+      } else {
           tr += `<td class="Signature">N/A</td>
           <td class="mid" style="display:none">${m.MID}</td>
           <td><button class="btn btn-primary pickup">Pick Up</button></td>
           <td style="display:none"><input type="file" class="sigupload" accept="image/*" /></td>`;
-      } else {
-          tr += `<td><img class="mb-4" src="../../../images/signatures/${m.Signature}" alt="" style="max-width: 100px; max-height: 100px" align="centre"></img></td>
-          <td class="searchable PickUpDate">${new Date(m.PickUpDate).toDateString()}</td>`
       }
       tr += "</tr>";
       return tr;
