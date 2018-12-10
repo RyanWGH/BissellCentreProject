@@ -265,13 +265,12 @@ app.get("/user", loggedIn, (req, res) => {
         });
 });
 
-app.put("/user", loggedIn, uploadPic.single("pic"), (req, res) => {
-    console.log("putting a new participant");
+app.put("/user", loggedIn, (req, res) => {
+    console.log("putting a new user");
     console.log(req.body);
-    console.log(req.file);
-    if (checkNewParticipant(req.body, req.file)) {
+    if (checkNewUser(req.body)) {
         sql.query(connectionString,
-            `INSERT INTO Users VALUES('${req.body.FName}', '${req.body.LName}', '${req.body.Phone}', '${req.body.Email}', '${req.body.Password}'`,
+            `INSERT INTO Users VALUES('${req.body.FName}', '${req.body.LName}', '${req.body.Phone}', '${req.body.Email}', '${req.body.Password}', '${req.body.Admin}')`,
             (err) => {
                 if (err) {
                     console.log(1, err);
@@ -655,6 +654,10 @@ function checkNewParticipant(p, f) {
     return p.FName && p.LName && f;
 }
 
+function checkNewUser(p) {
+    // later add picture check
+    return p.FName && p.LName && p.Phone && p.Email && p.Password && p.Admin;
+}
 function checkMail(m) {
     // later add signature check
     return m.PID && m.SenderName;

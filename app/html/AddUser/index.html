@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
+
 <body>
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -31,34 +33,30 @@
     </u1>
   </div>
 </nav>
-<link rel="stylesheet" href="../../css/tablestyle.css">
 
-<div id="page">
-<div align="center"><font size=14><b>Outstanding Mail</b></font></div>
-
-<table id="outstandingMailList">
-    <tr>
-    <th>Participant</th>
-		<th>Sender</th>
-		<th>Received</th>
-		<th>Return</th>
-	</tr>
-</table>
-
-</div>
+<main role="main" class="container">
+<form id="put-user">
+    <label for="FirstName">First Name:</label>
+    <input type="text" class="form-control" name="FName" style="width: 400px;">
+    <label for="LastName">Last Name:</label>
+    <input type="text" class="form-control" name="LName" style="width: 400px;">
+    <p></p>
+    <label for="Phone">Phone Number:</label>
+    <input type="text" class="form-control" name="Phone" style="width: 400px;">
+    <p></p>
+    <label for="Email">Email:</label>
+    <input type="text" class="form-control" name="Email" style="width: 400px;">
+    <p></p>
+    <label for="Password">Password:</label>
+    <input type="Password" class="form-control" name="Password" style="width: 400px;">
+    <p></p>
+    <label for="Admin">Admin:</label>
+    <input type="radio" name="Admin" value=1> Yes
+    <input type="radio" name="Admin" value=0> No<br>
+    <input type="submit" class="btn btn-primary btn-lg" style="width: 400px; height: 40px;" value="Submit">
+</form>
 
 <script>
-
-function personalmail(m) {
-    let tr = `<tr>
-    <td class="searchable Participant">${m.FName} ${m.LName}</td>
-    <td class="searchable SenderName">${m.SenderName}</td>
-    <td class="searchable DateReceived">${new Date(m.Date).toDateString()}</td>
-    <td class="mid" style="display:none">${m.MID}</td>
-    <td><button class="btn btn-primary return">Return</button></td>
-    </tr>`;
-    return tr;
-}
 function logoutHandler(){
     $.get(
         "http://localhost:3000/logout",
@@ -70,33 +68,26 @@ function logoutHandler(){
     });
   }
 $(document).ready(function() {
-    $.get("http://localhost:3000/outstanding_mail")
-    .done((data) => {
-        for (let i of data) {
-            $("#outstandingMailList").append(personalmail(i));
-        }
-        $(".return").click(function() {
-            let MID = $(this).parent().parent().find(".mid").text();
-            $.post(
-                "http://localhost:3000/outstanding_mail",
-                { MID }
-            )
-            .done(function(data) {
-                if (data.error) {
-                    alert(`Result: ${JSON.stringify(data)}`);
-                } else {
-                    alert("Mail marked as returned");
-                    location.reload();
-                }
-            })
-            .fail(function(data) {
-                console.log(data);
-            });
+    $("#put-user").submit(function(event) {
+        console.log("submit");
+        $.ajax({
+            url:"http://localhost:3000/user",
+            data: $("#put-user").serialize(),
+            type: "PUT"
+        })
+        .done(function(data) {
+            alert(`Result: ${JSON.stringify(data)}`);
+            $("#put-user").trigger("reset");
+        })
+        .fail(function(data) {
+            alert("Failed to add user");
         });
+        event.preventDefault();
+        return false;
     });
     $("#logout").click(logoutHandler);
-});
 
+});
 </script>
 
 </body>

@@ -22,6 +22,7 @@
       <li><a href="../NewParticipant/index.html">Add Participant</a></li>
       <li><a href="../NewDonation/index.html">Add Donation</a></li>
       <li><a href="../DonationList/index.html">Donation List</a></li>
+      <li><a href="../AddUser/index.html">Add Account</a></li>
       <li><a href="../Stats/index.html">Stats</a></li>
     </ul>
 	<u1 class="nav navbar-nav navbar-right">
@@ -163,6 +164,7 @@ function logoutHandler(){
           statData[i].Value = data[i].Column0;
       }
   });
+  $("#logout").click(logoutHandler);
 });
 
 
