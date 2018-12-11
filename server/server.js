@@ -14,11 +14,11 @@ const app = express();
 const port = 3000;
 
 const emailTransporter = nodemailer.createTransport({
-    host: "smtp.office365.com",
-    port: 587,
-    secure: false,
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
-        user: "mail-notifications@bissellcentre.org",
+        user: "bissell.notifications@gmail.com",
         pass: "Bis!2018@"
     }
 });
