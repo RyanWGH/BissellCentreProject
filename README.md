@@ -1,4 +1,5 @@
 # BissellCentreProject
+cd into main directory and run `npm install` to install the required packages.
 
 ## Frameworks
 
