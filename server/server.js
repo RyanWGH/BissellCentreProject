@@ -14,16 +14,16 @@ const app = express();
 const port = 3000;
 
 const emailTransporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
+    host: "smtp.emailprovider.com",
     port: 465,
     secure: true,
     auth: {
-        user: "bissell.notifications@gmail.com",
-        pass: "Bis!2018@"
+        user: "email-for-notifications@emailprovider.com",
+        pass: "password"
     }
 });
 
-const DIRECTOR_EMAIL = "ohoule5@gmail.com";
+const DIRECTOR_EMAIL = "director@emailprovider.com";
 
 const connectionString = "Driver={SQL Server Native Client 11.0};Server=localhost;Database=BisselCentre;Trusted_Connection=yes";
 
