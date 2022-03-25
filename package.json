@@ -19,7 +19,7 @@
   "dependencies": {
     "async": "^2.6.1",
     "body-parser": "^1.18.3",
-    "electron": "^3.0.2",
+    "electron": "^13.6.6",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "msnodesqlv8": "^0.6.9",
