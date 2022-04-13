@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/RyanWGH/BissellCentreProject#readme",
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^3.2.2",
     "body-parser": "^1.18.3",
     "electron": "^3.0.2",
     "express": "^4.16.3",
